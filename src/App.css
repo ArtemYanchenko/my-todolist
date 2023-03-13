@@ -1,0 +1,23 @@
+.App {
+    padding :50px;
+    display: flex;
+}
+
+.App div {
+    margin-right: 50px;
+}
+
+
+.errorInput {
+    border: 1px solid red;
+    outline: none;
+}
+
+.error {
+    color:red;
+    /*height: 30px;*/
+}
+
+.active {
+    background-color: red;
+}

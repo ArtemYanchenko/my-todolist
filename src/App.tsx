@@ -72,9 +72,13 @@ function App() {
 
     function addShoplist(title: string) {
         const newId = v1();
-        const newShoplist:Shoplist = {id: newId, title, filter: 'all'};
-        setShoplists([newShoplist,...shoplists]);
-        setGoods({[newId]:[],...goods})
+        const newShoplist: Shoplist = {id: newId, title, filter: 'all'};
+        setShoplists([newShoplist, ...shoplists]);
+        setGoods({[newId]: [], ...goods})
+    }
+
+    function changeTitleGood(shoplistID: string, goodID: string, newTitle: string) {
+        setGoods({...goods, [shoplistID]: goods[shoplistID].map(s => s.id === goodID ? {...s, title: newTitle} : s)})
     }
 
     return (
@@ -97,18 +101,19 @@ function App() {
                 const goodsForRender = filterGoods(goods[s.id], s.filter)
 
                 return (
-                        <Shoplist
-                            key={s.id}
-                            shoplistID={s.id}
-                            title={s.title}
-                            goods={goodsForRender}
-                            addGood={addGood}
-                            deleteGood={deleteGood}
-                            changeGoodStatus={changeGoodStatus}
-                            changeGoodsFilter={changeGoodsFilter}
-                            filter={s.filter}
-                            removeShoplist={removeShoplist}
-                        />
+                    <Shoplist
+                        key={s.id}
+                        shoplistID={s.id}
+                        title={s.title}
+                        goods={goodsForRender}
+                        addGood={addGood}
+                        deleteGood={deleteGood}
+                        changeGoodStatus={changeGoodStatus}
+                        changeGoodsFilter={changeGoodsFilter}
+                        filter={s.filter}
+                        removeShoplist={removeShoplist}
+                        changeTitleGood={changeTitleGood}
+                    />
                 )
             })}
 

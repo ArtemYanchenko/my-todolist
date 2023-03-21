@@ -3,5 +3,19 @@
     /*display: flex;*/
 }
 
+input:focus {
+    outline: 0;
+    outline-offset: 0;
+}
 
+.error{
+border:2px solid red;
+}
 
+.btnActive {
+    background-color: greenyellow;
+}
+
+.goodInBacket {
+    opacity: 0.5;
+}

@@ -60,6 +60,7 @@ function App() {
                 deleteGood={deleteGood}
                 changeGoodStatus={changeGoodStatus}
                 changeGoodsFilter={changeGoodsFilter}
+                filter={filter}
             />
         </div>
     )

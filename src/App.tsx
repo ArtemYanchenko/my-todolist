@@ -3,6 +3,7 @@ import './App.css';
 import Shoplist from './components/Shoplist';
 import {v1} from 'uuid';
 import shoplist from './components/Shoplist';
+import AddItemForm from './components/AddItemForm';
 
 export type Shoplist = {
     id: string
@@ -49,24 +50,37 @@ function App() {
         const newGood = {id: v1(), title, inBacket: false};
         setGoods({...goods, [shoplistID]: [newGood, ...goods[shoplistID]]})
     }
+
     function deleteGood(shoplistID: string, goodID: string) {
         setGoods({...goods, [shoplistID]: goods[shoplistID].filter(g => g.id !== goodID)})
     }
+
     function changeGoodStatus(shoplistID: string, goodID: string, checked: boolean) {
-        console.log(shoplistID,goodID,checked)
+        console.log(shoplistID, goodID, checked)
         setGoods({...goods, [shoplistID]: goods[shoplistID].map(g => g.id === goodID ? {...g, inBacket: checked} : g)})
         console.log(goods);
     }
+
     function changeGoodsFilter(shoplistID: string, filter: FilterType) {
         setShoplists(shoplists.map(s => s.id === shoplistID ? {...s, filter} : s))
     }
-    function removeShoplist (shoplistID:string) {
-        setShoplists(shoplists.filter(s=>s.id !== shoplistID))
+
+    function removeShoplist(shoplistID: string) {
+        setShoplists(shoplists.filter(s => s.id !== shoplistID))
         delete goods[shoplistID];
     }
 
+    function addShoplist(title: string) {
+        const newId = v1();
+        const newShoplist:Shoplist = {id: newId, title, filter: 'all'};
+        setShoplists([newShoplist,...shoplists]);
+        setGoods({[newId]:[],...goods})
+    }
+
     return (
+
         <div className="App">
+            <AddItemForm callBack={addShoplist}/>
             {shoplists.map(s => {
 
                 function filterGoods(goods: GoodType[], filterValue: FilterType) {
@@ -83,18 +97,18 @@ function App() {
                 const goodsForRender = filterGoods(goods[s.id], s.filter)
 
                 return (
-                    <Shoplist
-                        key={s.id}
-                        shoplistID={s.id}
-                        title={s.title}
-                        goods={goodsForRender}
-                        addGood={addGood}
-                        deleteGood={deleteGood}
-                        changeGoodStatus={changeGoodStatus}
-                        changeGoodsFilter={changeGoodsFilter}
-                        filter={s.filter}
-                        removeShoplist={removeShoplist}
-                    />
+                        <Shoplist
+                            key={s.id}
+                            shoplistID={s.id}
+                            title={s.title}
+                            goods={goodsForRender}
+                            addGood={addGood}
+                            deleteGood={deleteGood}
+                            changeGoodStatus={changeGoodStatus}
+                            changeGoodsFilter={changeGoodsFilter}
+                            filter={s.filter}
+                            removeShoplist={removeShoplist}
+                        />
                 )
             })}
 

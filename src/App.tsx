@@ -20,13 +20,17 @@ function App() {
 
     const [filter, setFilter] = useState<FilterType>('all')
 
-    function addGood (title:string) {
+    function addGood(title: string) {
         const newGood = {id: v1(), title, inBacket: false};
-        setGoods([newGood,...goods]);
+        setGoods([newGood, ...goods]);
     }
 
     function deleteGood(goodID: string) {
         setGoods(goods.filter(g => g.id !== goodID))
+    }
+
+    function changeGoodStatus(goodID: string, checked: boolean) {
+        setGoods(goods.map(g => g.id === goodID ? {...g, inBacket: checked} : g))
     }
 
     function filterGoods(goods: GoodsType[], filterValue: FilterType) {
@@ -39,6 +43,7 @@ function App() {
                 return goods;
         }
     }
+
 
     function changeGoodsFilter(filter: FilterType) {
         setFilter(filter);
@@ -53,6 +58,7 @@ function App() {
                 goods={goodsForRender}
                 addGood={addGood}
                 deleteGood={deleteGood}
+                changeGoodStatus={changeGoodStatus}
                 changeGoodsFilter={changeGoodsFilter}
             />
         </div>

@@ -1,6 +1,10 @@
 .App {
-    padding :50px;
-    /*display: flex;*/
+    padding: 50px;
+    display: flex;
+    margin-right: 100px;
+}
+.Shoplist{
+    margin-right: 100px;
 }
 
 input:focus {

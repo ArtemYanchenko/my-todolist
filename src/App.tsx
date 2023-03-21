@@ -20,6 +20,11 @@ function App() {
 
     const [filter, setFilter] = useState<FilterType>('all')
 
+    function addGood (title:string) {
+        const newGood = {id: v1(), title, inBacket: false};
+        setGoods([newGood,...goods]);
+    }
+
     function deleteGood(goodID: string) {
         setGoods(goods.filter(g => g.id !== goodID))
     }
@@ -35,6 +40,10 @@ function App() {
         }
     }
 
+    function changeGoodsFilter(filter: FilterType) {
+        setFilter(filter);
+    }
+
     const goodsForRender: GoodsType[] = filterGoods(goods, filter)
 
     return (
@@ -42,8 +51,9 @@ function App() {
             <Shoplist
                 title="shop today"
                 goods={goodsForRender}
+                addGood={addGood}
                 deleteGood={deleteGood}
-                setFilter={setFilter}
+                changeGoodsFilter={changeGoodsFilter}
             />
         </div>
     )

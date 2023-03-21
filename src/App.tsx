@@ -49,22 +49,21 @@ function App() {
         const newGood = {id: v1(), title, inBacket: false};
         setGoods({...goods, [shoplistID]: [newGood, ...goods[shoplistID]]})
     }
-
     function deleteGood(shoplistID: string, goodID: string) {
         setGoods({...goods, [shoplistID]: goods[shoplistID].filter(g => g.id !== goodID)})
     }
-
     function changeGoodStatus(shoplistID: string, goodID: string, checked: boolean) {
         console.log(shoplistID,goodID,checked)
         setGoods({...goods, [shoplistID]: goods[shoplistID].map(g => g.id === goodID ? {...g, inBacket: checked} : g)})
         console.log(goods);
     }
-
-
     function changeGoodsFilter(shoplistID: string, filter: FilterType) {
         setShoplists(shoplists.map(s => s.id === shoplistID ? {...s, filter} : s))
     }
-
+    function removeShoplist (shoplistID:string) {
+        setShoplists(shoplists.filter(s=>s.id !== shoplistID))
+        delete goods[shoplistID];
+    }
 
     return (
         <div className="App">
@@ -94,6 +93,7 @@ function App() {
                         changeGoodStatus={changeGoodStatus}
                         changeGoodsFilter={changeGoodsFilter}
                         filter={s.filter}
+                        removeShoplist={removeShoplist}
                     />
                 )
             })}

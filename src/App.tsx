@@ -17,7 +17,7 @@ export type GoodType = {
 }
 
 export type GoodsType = {
-    [key:string]:GoodType[];
+    [key: string]: GoodType[];
 }
 
 export type FilterType = 'all' | 'need to buy' | 'in basket';
@@ -45,31 +45,30 @@ function App() {
         ]
     })
 
-    const [filter, setFilter] = useState<FilterType>('all')
-
-    function addGood(title: string) {
-        // const newGood = {id: v1(), title, inBacket: false};
-        // setGoods([newGood, ...goods]);
+    function addGood(shoplistID: string, title: string) {
+        const newGood = {id: v1(), title, inBacket: false};
+        setGoods({...goods, [shoplistID]: [newGood, ...goods[shoplistID]]})
     }
 
-    function deleteGood(goodID: string) {
-        // setGoods(goods.filter(g => g.id !== goodID))
+    function deleteGood(shoplistID: string, goodID: string) {
+        setGoods({...goods, [shoplistID]: goods[shoplistID].filter(g => g.id !== goodID)})
     }
 
-    function changeGoodStatus(goodID: string, checked: boolean) {
-        // setGoods(goods.map(g => g.id === goodID ? {...g, inBacket: checked} : g))
+    function changeGoodStatus(shoplistID: string, goodID: string, checked: boolean) {
+        console.log(shoplistID,goodID,checked)
+        setGoods({...goods, [shoplistID]: goods[shoplistID].map(g => g.id === goodID ? {...g, inBacket: checked} : g)})
+        console.log(goods);
     }
 
 
-
-    function changeGoodsFilter(shoplistID:string,filter: FilterType) {
-        setShoplists(shoplists.map(s=>s.id === shoplistID ? {...s,filter} : s))
+    function changeGoodsFilter(shoplistID: string, filter: FilterType) {
+        setShoplists(shoplists.map(s => s.id === shoplistID ? {...s, filter} : s))
     }
 
 
     return (
         <div className="App">
-            {shoplists.map(s=>{
+            {shoplists.map(s => {
 
                 function filterGoods(goods: GoodType[], filterValue: FilterType) {
                     switch (filterValue) {
@@ -94,7 +93,7 @@ function App() {
                         deleteGood={deleteGood}
                         changeGoodStatus={changeGoodStatus}
                         changeGoodsFilter={changeGoodsFilter}
-                        filter={filter}
+                        filter={s.filter}
                     />
                 )
             })}

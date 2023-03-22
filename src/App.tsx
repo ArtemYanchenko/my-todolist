@@ -50,24 +50,16 @@ function App() {
         const newGood = {id: v1(), title, inBacket: false};
         setGoods({...goods, [shoplistID]: [newGood, ...goods[shoplistID]]})
     }
-
-    function deleteGood(shoplistID: string, goodID: string) {
-        setGoods({...goods, [shoplistID]: goods[shoplistID].filter(g => g.id !== goodID)})
+    function changeTitleGood(shoplistID: string, goodID: string, newTitle: string) {
+        setGoods({...goods, [shoplistID]: goods[shoplistID].map(s => s.id === goodID ? {...s, title: newTitle} : s)})
     }
-
     function changeGoodStatus(shoplistID: string, goodID: string, checked: boolean) {
         console.log(shoplistID, goodID, checked)
         setGoods({...goods, [shoplistID]: goods[shoplistID].map(g => g.id === goodID ? {...g, inBacket: checked} : g)})
         console.log(goods);
     }
-
-    function changeShoplistFilter(shoplistID: string, filter: FilterType) {
-        setShoplists(shoplists.map(s => s.id === shoplistID ? {...s, filter} : s))
-    }
-
-    function removeShoplist(shoplistID: string) {
-        setShoplists(shoplists.filter(s => s.id !== shoplistID))
-        delete goods[shoplistID];
+    function removeGood(shoplistID: string, goodID: string) {
+        setGoods({...goods, [shoplistID]: goods[shoplistID].filter(g => g.id !== goodID)})
     }
 
     function addShoplist(title: string) {
@@ -76,17 +68,18 @@ function App() {
         setShoplists([newShoplist, ...shoplists]);
         setGoods({[newId]: [], ...goods})
     }
-
+    function changeShoplistFilter(shoplistID: string, filter: FilterType) {
+        setShoplists(shoplists.map(s => s.id === shoplistID ? {...s, filter} : s))
+    }
     function changeShoplistTitle(shoplistID: string, newTitle: string) {
         setShoplists(shoplists.map(s => s.id === shoplistID ? {...s, title: newTitle} : s))
     }
-
-    function changeTitleGood(shoplistID: string, goodID: string, newTitle: string) {
-        setGoods({...goods, [shoplistID]: goods[shoplistID].map(s => s.id === goodID ? {...s, title: newTitle} : s)})
+    function removeShoplist(shoplistID: string) {
+        setShoplists(shoplists.filter(s => s.id !== shoplistID))
+        delete goods[shoplistID];
     }
 
     return (
-
         <div className="App">
             <AddItemForm callBack={addShoplist}/>
             {shoplists.map(s => {
@@ -101,7 +94,6 @@ function App() {
                             return goods;
                     }
                 }
-
                 const goodsForRender = filterGoods(goods[s.id], s.filter)
 
                 return (
@@ -110,14 +102,14 @@ function App() {
                         shoplistID={s.id}
                         title={s.title}
                         goods={goodsForRender}
+                        filter={s.filter}
                         addGood={addGood}
-                        deleteGood={deleteGood}
                         changeGoodStatus={changeGoodStatus}
                         changeGoodsFilter={changeShoplistFilter}
-                        filter={s.filter}
-                        removeShoplist={removeShoplist}
+                        removeGood={removeGood}
                         changeTitleGood={changeTitleGood}
                         changeShoplistTitle={changeShoplistTitle}
+                        removeShoplist={removeShoplist}
                     />
                 )
             })}

@@ -5,7 +5,7 @@ import {v1} from 'uuid';
 import shoplist from './components/Shoplist';
 import AddItemForm from './components/AddItemForm';
 
-export type Shoplist = {
+export type ShoplistType = {
     id: string
     title: string
     filter: FilterType
@@ -28,7 +28,7 @@ function App() {
     const shoplistID1 = v1();
     const shoplistID2 = v1();
 
-    const [shoplists, setShoplists] = useState<Shoplist[]>([
+    const [shoplists, setShoplists] = useState<ShoplistType[]>([
         {id: shoplistID1, title: 'shop today', filter: 'all'},
         {id: shoplistID2, title: 'shop later', filter: 'all'},
     ])
@@ -61,7 +61,7 @@ function App() {
         console.log(goods);
     }
 
-    function changeGoodsFilter(shoplistID: string, filter: FilterType) {
+    function changeShoplistFilter(shoplistID: string, filter: FilterType) {
         setShoplists(shoplists.map(s => s.id === shoplistID ? {...s, filter} : s))
     }
 
@@ -72,9 +72,13 @@ function App() {
 
     function addShoplist(title: string) {
         const newId = v1();
-        const newShoplist: Shoplist = {id: newId, title, filter: 'all'};
+        const newShoplist: ShoplistType = {id: newId, title, filter: 'all'};
         setShoplists([newShoplist, ...shoplists]);
         setGoods({[newId]: [], ...goods})
+    }
+
+    function changeShoplistTitle(shoplistID: string, newTitle: string) {
+        setShoplists(shoplists.map(s => s.id === shoplistID ? {...s, title: newTitle} : s))
     }
 
     function changeTitleGood(shoplistID: string, goodID: string, newTitle: string) {
@@ -109,10 +113,11 @@ function App() {
                         addGood={addGood}
                         deleteGood={deleteGood}
                         changeGoodStatus={changeGoodStatus}
-                        changeGoodsFilter={changeGoodsFilter}
+                        changeGoodsFilter={changeShoplistFilter}
                         filter={s.filter}
                         removeShoplist={removeShoplist}
                         changeTitleGood={changeTitleGood}
+                        changeShoplistTitle={changeShoplistTitle}
                     />
                 )
             })}

@@ -3,7 +3,6 @@ import React, {ChangeEvent, useState} from 'react';
 
 type PropsType = {
     title: string
-    inBacket: boolean
     callBack:(titleValue:string)=>void
 }
 const EditableSpan = (props: PropsType) => {
@@ -30,7 +29,7 @@ const EditableSpan = (props: PropsType) => {
             {
                 editMode
                     ? <input type="text" value={titleValue} autoFocus onBlur={disableEdit} onChange={onChangeInputHandler}/>
-                    : <span className={props.inBacket ? 'goodInBacket' : ''}
+                    : <span
                             onDoubleClick={activateEdit}>{props.title}</span>
             }
         </>

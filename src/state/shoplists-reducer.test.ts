@@ -1,4 +1,10 @@
-import {shoplistsReducer} from './shoplists-reducer'
+import {
+    addShoplistAC,
+    changeShoplistFilterAC,
+    changeShoplistTitleAC,
+    removeShoplistAC,
+    shoplistsReducer
+} from './shoplists-reducer'
 import {v1} from 'uuid'
 import {FilterType, ShoplistType} from '../App';
 
@@ -12,12 +18,7 @@ test('correct shoplist should be removed', () => {
         {id: shoplistID2, title: 'shop later', filter: 'all'},
     ]
 
-    const action = {
-        type: 'REMOVE-SHOPLIST' as const,
-        shoplistID: shoplistID1
-    }
-
-    const endState = shoplistsReducer(startState, action)
+    const endState = shoplistsReducer(startState, removeShoplistAC(shoplistID1))
 
     expect(endState.length).toBe(1)
     expect(endState[0].id).toBe(shoplistID2)
@@ -32,12 +33,7 @@ test('correct shoplist should be added', () => {
         {id: shoplistID2, title: 'shop later', filter: 'all'},
     ]
 
-    const action = {
-        type: 'ADD-SHOPLIST' as const,
-        title: 'Hello world !!!'
-    }
-
-    const endState = shoplistsReducer(startState, action)
+    const endState = shoplistsReducer(startState, addShoplistAC('Hello world !!!'))
 
     expect(endState.length).toBe(3)
     expect(endState[0].title).toBe('Hello world !!!')
@@ -53,13 +49,7 @@ test('correct shoplist should be change title', () => {
         {id: shoplistID2, title: 'shop later', filter: 'all'},
     ]
 
-    const action = {
-        type: 'CHANGE-SHOPLIST-TITLE' as const,
-        shoplistID: shoplistID1,
-        title: 'what to know'
-    }
-
-    const endState = shoplistsReducer(startState, action)
+    const endState = shoplistsReducer(startState, changeShoplistTitleAC(shoplistID1, 'what to know'))
 
     expect(endState.length).toBe(2)
     expect(endState[0].title).toBe('what to know')
@@ -76,13 +66,7 @@ test('correct shoplist should be change filter', () => {
         {id: shoplistID2, title: 'shop later', filter: 'all'},
     ]
 
-    const action = {
-        type: 'CHANGE-SHOPLIST-FILTER' as const,
-        shoplistID: shoplistID1,
-        filter: newFilterValue
-    }
-
-    const endState = shoplistsReducer(startState, action)
+    const endState = shoplistsReducer(startState, changeShoplistFilterAC(shoplistID1, newFilterValue))
 
     expect(endState.length).toBe(2)
     expect(endState[0].filter).toBe('in basket')

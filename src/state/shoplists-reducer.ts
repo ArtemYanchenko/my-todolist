@@ -4,29 +4,29 @@ import {v1} from 'uuid';
 
 
 
-type removeShoplistAC = {
+type removeShoplistAT = {
     type: 'REMOVE-SHOPLIST'
     shoplistID: string
 }
 
-type addShoplistAC = {
+type addShoplistAT = {
     type: 'ADD-SHOPLIST'
     title: string
 }
 
-type changeShoplistTitle = {
+type changeShoplistTitleAT = {
     type: 'CHANGE-SHOPLIST-TITLE'
     shoplistID: string
     title: string
 }
 
-type changeShoplistFilter = {
+type changeShoplistFilterAT = {
     type: 'CHANGE-SHOPLIST-FILTER'
     shoplistID:string
     filter:FilterType
 }
 
-type ActionType = removeShoplistAC | addShoplistAC | changeShoplistTitle | changeShoplistFilter
+type ActionType = removeShoplistAT | addShoplistAT | changeShoplistTitleAT | changeShoplistFilterAT
 
 export const shoplistsReducer = (state: ShoplistType[], action: ActionType) => {
     switch (action.type) {
@@ -41,4 +41,22 @@ export const shoplistsReducer = (state: ShoplistType[], action: ActionType) => {
         default:
             return state;
     }
+}
+
+
+export const removeShoplistAC = (shoplistID: string): removeShoplistAT => {
+    return {type: 'REMOVE-SHOPLIST', shoplistID: shoplistID}
+}
+
+
+export const addShoplistAC = (title: string): addShoplistAT => {
+    return {type: 'ADD-SHOPLIST', title:title}
+}
+
+export const changeShoplistTitleAC = (shoplistID:string,title: string): changeShoplistTitleAT => {
+    return {type: 'CHANGE-SHOPLIST-TITLE', shoplistID, title}
+}
+
+export const changeShoplistFilterAC = (shoplistID:string,filter:FilterType): changeShoplistFilterAT => {
+    return {type: 'CHANGE-SHOPLIST-FILTER', shoplistID, filter}
 }

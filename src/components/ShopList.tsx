@@ -22,7 +22,7 @@ const ShopList: FC<PropsType> = (
             <ul>
                 {goods.map(g => {
                     return (
-                        <li key={g.id}>
+                        <li>
                             <input type="checkbox" checked={g.inBacket}/> <span>{g.title}</span>
                         </li>
                     )

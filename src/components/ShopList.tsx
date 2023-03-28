@@ -1,17 +1,42 @@
-import React, {FC} from 'react';
+import React, {FC, useState} from 'react';
 import {GoodType} from '../App';
+
+
+type FilterType = 'all' | 'active' | 'completed'
 
 type PropsType = {
     title: string
     goods: GoodType[]
+    removeGood:(goodID:string)=>void
 }
 
 
 const ShopList: FC<PropsType> = (
     {
         title,
-        goods
+        goods,
+        removeGood
     }) => {
+    const [filter,setFilter] = useState<FilterType>('all')
+
+
+    const onClickFilterFandler = (filterValue:FilterType) => {
+        setFilter(filterValue)
+    }
+
+
+    let filteredGoods = goods;
+
+    if (filter === 'active') {
+        filteredGoods = goods.filter(g=>!g.inBacket)
+    }
+
+    if (filter === 'completed') {
+        filteredGoods = goods.filter(g=>g.inBacket)
+    }
+
+
+
     return (
         <div className={'Shoplist'}>
             <h3>{title}</h3>
@@ -20,18 +45,22 @@ const ShopList: FC<PropsType> = (
                 <button>+</button>
             </div>
             <ul>
-                {goods.map(g => {
+                {filteredGoods.map(g => {
+                    const removeGoodHandler = () => {
+                        removeGood(g.id)
+                    }
                     return (
-                        <li>
+                        <li key={g.id}>
                             <input type="checkbox" checked={g.inBacket}/> <span>{g.title}</span>
+                            <button onClick={removeGoodHandler}>X</button>
                         </li>
                     )
                 })}
             </ul>
             <div>
-                <button>All</button>
-                <button>Active</button>
-                <button>Completed</button>
+                <button onClick={()=>{onClickFilterFandler('all')}}>All</button>
+                <button onClick={()=>{onClickFilterFandler('active')}}>Active</button>
+                <button onClick={()=>{onClickFilterFandler('completed')}}>Completed</button>
             </div>
         </div>
     );

@@ -58,6 +58,14 @@ export function App() {
         delete goods[shoplistID];
     }
 
+    function changeTitleGood (shoplistID:string,goodID:string,newTitle:string) {
+        setGoods({...goods,[shoplistID]:goods[shoplistID].map(g=>g.id === goodID ? {...g, title:newTitle} : g)})
+    }
+
+    function changeTitleShoplist (shoplistID:string,newTitle:string) {
+        setShoplists(shoplists.map(s=>s.id === shoplistID ? {...s,title:newTitle} : s))
+    }
+
     return (
         <div className="App">
             {shoplists.map(s => {
@@ -72,6 +80,8 @@ export function App() {
                         changeGoodStatus={changeGoodStatus}
                         changeFilterShoplist={changeFilterShoplist}
                         removeShoplist={removeShoplist}
+                        changeTitleGood={changeTitleGood}
+                        changeTitleShoplist={changeTitleShoplist}
                         filter={s.filter}
                     />
                 )

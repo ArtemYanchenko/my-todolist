@@ -1,6 +1,7 @@
 import React, {ChangeEvent, KeyboardEvent, FC, useState} from 'react';
 import {GoodType} from '../App';
 import AddItemForm from './AddItemForm';
+import EditableSpan from './EditableSpan';
 
 export type FilterType = 'all' | 'active' | 'completed'
 
@@ -13,6 +14,8 @@ type PropsType = {
     changeGoodStatus: (shoplistID:string,goodID: string, newValue: boolean) => void
     changeFilterShoplist: (shoplistID: string, filter: FilterType) => void
     removeShoplist:(shoplistID:string)=>void
+    changeTitleGood:(shoplistID:string,goodID:string,newTitle:string)=>void
+    changeTitleShoplist:(shoplistID:string,newTitle:string)=>void
     filter: FilterType
 }
 
@@ -27,6 +30,8 @@ const ShopList: FC<PropsType> = (
         changeGoodStatus,
         changeFilterShoplist,
         removeShoplist,
+        changeTitleGood,
+        changeTitleShoplist,
         filter,
 
     }) => {
@@ -54,10 +59,15 @@ const ShopList: FC<PropsType> = (
         const onChangeGoodStatusHandler = (e: ChangeEvent<HTMLInputElement>) => {
             changeGoodStatus(shoplistID,g.id, e.currentTarget.checked);
         }
+
+        const changeTitleGoodHandler = (newTitle:string) => {
+            changeTitleGood(shoplistID,g.id,newTitle);
+        }
         return (
-            <li key={g.id}>
+            <li className={g.inBacket ? 'goodInBacket' : ''} key={g.id}>
                 <input type="checkbox" checked={g.inBacket} onChange={onChangeGoodStatusHandler}/>
-                <span className={g.inBacket ? 'goodInBacket' : ''}>{g.title}</span>
+                {/*<span className={g.inBacket ? 'goodInBacket' : ''}>{g.title}</span>*/}
+                <EditableSpan title={g.title} callBack={changeTitleGoodHandler}/>
                 <button onClick={removeGoodHandler}>X</button>
             </li>
         )
@@ -67,10 +77,14 @@ const ShopList: FC<PropsType> = (
         addGood(shoplistID,newTitle)
     }
 
+    const changeShoplistTitleHandler = (newTitle:string) => {
+        changeTitleShoplist(shoplistID,newTitle)
+    }
+
     return (
         <div className={'Shoplist'}>
             <h3>
-                {title}
+                <EditableSpan title={title} callBack={changeShoplistTitleHandler}/>
                 <button onClick={removeShoplistHandler}>x</button>
             </h3>
             <AddItemForm callBack={addGoodCallBack}/>

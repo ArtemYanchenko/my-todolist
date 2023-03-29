@@ -18,12 +18,23 @@ export function App() {
         setGoods(goods.filter(g => g.id !== goodID))
     }
 
+    function addGood(newTitle: string) {
+        const newGood = {id: v1(), title: newTitle, inBacket: false}
+        setGoods([newGood, ...goods])
+    }
+
+    function changeGoodStatus(goodID: string, newValue: boolean) {
+        setGoods(goods.map(g => g.id === goodID ? {...g, inBacket: newValue} : g))
+    }
+
     return (
         <div className="App">
             <ShopList
                 title={'What to buy today'}
                 goods={goods}
                 removeGood={removeGood}
+                addGood={addGood}
+                changeGoodStatus={changeGoodStatus}
             />
         </div>
     )

@@ -1,41 +1,82 @@
 import React, {useState} from 'react'
 import './App.css'
-import ShopList from './components/ShopList';
+import ShopList, {FilterType} from './components/ShopList';
 import {v1} from 'uuid';
+
+export type ShoplistType = {
+    id: string, title: string, filter: FilterType
+}
 
 export type GoodType = { id: string, title: string, inBacket: boolean }
 
+export type GoodsType = {
+    [key: string]: GoodType[];
+}
+
 export function App() {
 
-    const [goods, setGoods] = useState<GoodType[]>([
-        {id: v1(), title: 'milk', inBacket: false},
-        {id: v1(), title: 'book', inBacket: true},
-        {id: v1(), title: 'bear', inBacket: false},
-        {id: v1(), title: 'salt', inBacket: false},
+    let shoplistID1 = v1()
+    let shoplistID2 = v1()
+
+    let [shoplists, setShoplists] = useState<ShoplistType[]>([
+        {id: shoplistID1, title: 'buy today', filter: 'all'},
+        {id: shoplistID2, title: 'buy tomorrow', filter: 'all'},
     ])
 
-    function removeGood(goodID: string) {
-        setGoods(goods.filter(g => g.id !== goodID))
-    }
+    let [goods, setGoods] = useState<GoodsType>({
+        [shoplistID1]: [
+            {id: v1(), title: 'Book - HTML&CSS', inBacket: true},
+            {id: v1(), title: 'Book - JS', inBacket: true},
+            {id: v1(), title: 'Book - ReactJS', inBacket: false},
 
-    function addGood(newTitle: string) {
+        ],
+        [shoplistID2]: [
+            {id: v1(), title: 'Book - Rest API', inBacket: false},
+            {id: v1(), title: 'Book - GraphQL', inBacket: false},
+        ]
+    })
+
+    function addGood(shoplistID: string, newTitle: string) {
         const newGood = {id: v1(), title: newTitle, inBacket: false}
-        setGoods([newGood, ...goods])
+        setGoods({...goods, [shoplistID]: [newGood, ...goods[shoplistID]]})
     }
 
-    function changeGoodStatus(goodID: string, newValue: boolean) {
-        setGoods(goods.map(g => g.id === goodID ? {...g, inBacket: newValue} : g))
+    function removeGood(shoplistID: string, goodID: string) {
+        setGoods({...goods, [shoplistID]: goods[shoplistID].filter(g => g.id !== goodID)})
+    }
+
+    function changeGoodStatus(shoplistID:string,goodID: string, newValue: boolean) {
+        setGoods({...goods,[shoplistID]:goods[shoplistID].map(g=>g.id === goodID ? {...g,inBacket:newValue} : g)})
+    }
+
+    function changeFilterShoplist (shoplistID: string, filter: FilterType) {
+        setShoplists(shoplists.map(s => s.id === shoplistID ? {...s, filter} : s))
+    }
+
+    function removeShoplist (shoplistID:string) {
+        setShoplists(shoplists.filter(s=>s.id !== shoplistID));
+        delete goods[shoplistID];
     }
 
     return (
         <div className="App">
-            <ShopList
-                title={'What to buy today'}
-                goods={goods}
-                removeGood={removeGood}
-                addGood={addGood}
-                changeGoodStatus={changeGoodStatus}
-            />
+            {shoplists.map(s => {
+                return (
+                    <ShopList
+                        key={s.id}
+                        shoplistID={s.id}
+                        title={s.title}
+                        goods={goods[s.id]}
+                        addGood={addGood}
+                        removeGood={removeGood}
+                        changeGoodStatus={changeGoodStatus}
+                        changeFilterShoplist={changeFilterShoplist}
+                        removeShoplist={removeShoplist}
+                        filter={s.filter}
+                    />
+                )
+            })}
+
         </div>
     )
 }

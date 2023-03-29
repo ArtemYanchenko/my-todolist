@@ -1,32 +1,35 @@
 import React, {ChangeEvent, KeyboardEvent, FC, useState} from 'react';
 import {GoodType} from '../App';
+import AddItemForm from './AddItemForm';
 
-type FilterType = 'all' | 'active' | 'completed'
+export type FilterType = 'all' | 'active' | 'completed'
 
 type PropsType = {
+    shoplistID: string
     title: string
     goods: GoodType[]
-    removeGood: (goodID: string) => void
-    addGood: (newTitle: string) => void
-    changeGoodStatus: (goodID: string, newValue: boolean) => void
+    addGood: (shoplistID:string, newTitle: string) => void
+    removeGood: (shoplistID:string,goodID: string) => void
+    changeGoodStatus: (shoplistID:string,goodID: string, newValue: boolean) => void
+    changeFilterShoplist: (shoplistID: string, filter: FilterType) => void
+    removeShoplist:(shoplistID:string)=>void
+    filter: FilterType
 }
 
 
 const ShopList: FC<PropsType> = (
     {
+        shoplistID,
         title,
         goods,
-        removeGood,
         addGood,
+        removeGood,
         changeGoodStatus,
-    }) => {
-    const [filter, setFilter] = useState<FilterType>('all')
-    const [newTitle, setNewTitle] = useState<string>('')
-    const [error, setError] = useState<boolean>(false)
+        changeFilterShoplist,
+        removeShoplist,
+        filter,
 
-    const onClickFilterFandler = (filterValue: FilterType) => {
-        setFilter(filterValue)
-    }
+    }) => {
 
 
     let filteredGoods = goods;
@@ -34,71 +37,57 @@ const ShopList: FC<PropsType> = (
     if (filter === 'active') {
         filteredGoods = goods.filter(g => !g.inBacket)
     }
-
     if (filter === 'completed') {
         filteredGoods = goods.filter(g => g.inBacket)
     }
 
-    const onChangeInputHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        setNewTitle(e.currentTarget.value);
-        setError(false);
-    }
-    const addGoodHandler = () => {
-        if (newTitle.trim()) {
-            addGood(newTitle.trim());
-            setNewTitle('');
-        } else (
-            setError(true)
-        )
-    }
-    const onKeyDownHandler = (e: KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
-            addGoodHandler();
-        }
+
+    const removeShoplistHandler = () => {
+        removeShoplist(shoplistID);
     }
 
     const mappedGoods = filteredGoods.map(g => {
         const removeGoodHandler = () => {
-            removeGood(g.id)
+            removeGood(shoplistID,g.id)
         }
 
         const onChangeGoodStatusHandler = (e: ChangeEvent<HTMLInputElement>) => {
-            changeGoodStatus(g.id, e.currentTarget.checked);
+            changeGoodStatus(shoplistID,g.id, e.currentTarget.checked);
         }
         return (
             <li key={g.id}>
                 <input type="checkbox" checked={g.inBacket} onChange={onChangeGoodStatusHandler}/>
-                <span className={g.inBacket ? 'goodInBacket' : ''} >{g.title}</span>
+                <span className={g.inBacket ? 'goodInBacket' : ''}>{g.title}</span>
                 <button onClick={removeGoodHandler}>X</button>
             </li>
         )
     })
 
+    const addGoodCallBack = (newTitle:string) => {
+        addGood(shoplistID,newTitle)
+    }
+
     return (
         <div className={'Shoplist'}>
-            <h3>{title}</h3>
-            <div>
-                <input className={error ? 'errorInput' : ''}
-                       value={newTitle}
-                       onChange={onChangeInputHandler}
-                       onKeyDown={onKeyDownHandler}/>
-                <button onClick={addGoodHandler}>+</button>
-            </div>
-            <div className={'errorMessage'}>{error ? <span>title is required!!!</span> : ''}</div>
+            <h3>
+                {title}
+                <button onClick={removeShoplistHandler}>x</button>
+            </h3>
+            <AddItemForm callBack={addGoodCallBack}/>
             <ul>
                 {mappedGoods}
             </ul>
             <div>
                 <button className={filter === 'all' ? 'btnActive' : ''} onClick={() => {
-                    onClickFilterFandler('all')
+                    changeFilterShoplist(shoplistID, 'all')
                 }}>All
                 </button>
                 <button className={filter === 'active' ? 'btnActive' : ''} onClick={() => {
-                    onClickFilterFandler('active')
+                    changeFilterShoplist(shoplistID,'active')
                 }}>Active
                 </button>
                 <button className={filter === 'completed' ? 'btnActive' : ''} onClick={() => {
-                    onClickFilterFandler('completed')
+                    changeFilterShoplist(shoplistID,'completed')
                 }}>Completed
                 </button>
             </div>

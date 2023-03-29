@@ -1,11 +1,11 @@
 .App {
     padding: 50px;
-    display: flex;
-    margin-right: 100px;
+    display: grid;
+  grid-template-columns: 4fr 4fr 4fr;
 }
-.Shoplist{
-    margin-right: 100px;
-}
+/*.Shoplist{*/
+/*    width:100%;*/
+/*}*/
 
 input:focus {
     outline: 0;

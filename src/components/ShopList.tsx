@@ -2,6 +2,8 @@ import React, {ChangeEvent, KeyboardEvent, FC, useState} from 'react';
 import {GoodType} from '../App';
 import AddItemForm from './AddItemForm';
 import EditableSpan from './EditableSpan';
+import {Button, Checkbox, IconButton} from '@mui/material';
+import {CancelPresentation, DoNotDisturbOn} from '@mui/icons-material';
 
 export type FilterType = 'all' | 'active' | 'completed'
 
@@ -9,13 +11,13 @@ type PropsType = {
     shoplistID: string
     title: string
     goods: GoodType[]
-    addGood: (shoplistID:string, newTitle: string) => void
-    removeGood: (shoplistID:string,goodID: string) => void
-    changeGoodStatus: (shoplistID:string,goodID: string, newValue: boolean) => void
+    addGood: (shoplistID: string, newTitle: string) => void
+    removeGood: (shoplistID: string, goodID: string) => void
+    changeGoodStatus: (shoplistID: string, goodID: string, newValue: boolean) => void
     changeFilterShoplist: (shoplistID: string, filter: FilterType) => void
-    removeShoplist:(shoplistID:string)=>void
-    changeTitleGood:(shoplistID:string,goodID:string,newTitle:string)=>void
-    changeTitleShoplist:(shoplistID:string,newTitle:string)=>void
+    removeShoplist: (shoplistID: string) => void
+    changeTitleGood: (shoplistID: string, goodID: string, newTitle: string) => void
+    changeTitleShoplist: (shoplistID: string, newTitle: string) => void
     filter: FilterType
 }
 
@@ -53,57 +55,59 @@ const ShopList: FC<PropsType> = (
 
     const mappedGoods = filteredGoods.map(g => {
         const removeGoodHandler = () => {
-            removeGood(shoplistID,g.id)
+            removeGood(shoplistID, g.id)
         }
-
         const onChangeGoodStatusHandler = (e: ChangeEvent<HTMLInputElement>) => {
-            changeGoodStatus(shoplistID,g.id, e.currentTarget.checked);
+            changeGoodStatus(shoplistID, g.id, e.currentTarget.checked);
+        }
+        const changeTitleGoodHandler = (newTitle: string) => {
+            changeTitleGood(shoplistID, g.id, newTitle);
         }
 
-        const changeTitleGoodHandler = (newTitle:string) => {
-            changeTitleGood(shoplistID,g.id,newTitle);
-        }
         return (
-            <li className={g.inBacket ? 'goodInBacket' : ''} key={g.id}>
-                <input type="checkbox" checked={g.inBacket} onChange={onChangeGoodStatusHandler}/>
-                {/*<span className={g.inBacket ? 'goodInBacket' : ''}>{g.title}</span>*/}
+            <div className={g.inBacket ? 'goodInBacket' : ''} key={g.id}>
+                <Checkbox checked={g.inBacket} color="primary" onChange={onChangeGoodStatusHandler}/>
                 <EditableSpan title={g.title} callBack={changeTitleGoodHandler}/>
-                <button onClick={removeGoodHandler}>X</button>
-            </li>
+                <IconButton onClick={removeGoodHandler}>
+                    <DoNotDisturbOn/>
+                </IconButton>
+            </div>
         )
     })
 
-    const addGoodCallBack = (newTitle:string) => {
-        addGood(shoplistID,newTitle)
+    const addGoodCallBack = (newTitle: string) => {
+        addGood(shoplistID, newTitle)
     }
 
-    const changeShoplistTitleHandler = (newTitle:string) => {
-        changeTitleShoplist(shoplistID,newTitle)
+    const changeShoplistTitleHandler = (newTitle: string) => {
+        changeTitleShoplist(shoplistID, newTitle)
     }
 
     return (
         <div className={'Shoplist'}>
             <h3>
                 <EditableSpan title={title} callBack={changeShoplistTitleHandler}/>
-                <button onClick={removeShoplistHandler}>x</button>
+                <IconButton onClick={removeShoplistHandler}>
+                    <CancelPresentation/>
+                </IconButton>
             </h3>
             <AddItemForm callBack={addGoodCallBack}/>
-            <ul>
-                {mappedGoods}
-            </ul>
             <div>
-                <button className={filter === 'all' ? 'btnActive' : ''} onClick={() => {
+                {mappedGoods}
+            </div>
+            <div>
+                <Button color='inherit' variant={filter === 'all' ? 'outlined' : 'text'} onClick={() => {
                     changeFilterShoplist(shoplistID, 'all')
                 }}>All
-                </button>
-                <button className={filter === 'active' ? 'btnActive' : ''} onClick={() => {
-                    changeFilterShoplist(shoplistID,'active')
+                </Button>
+                <Button color='primary' variant={filter === 'active' ? 'outlined' : 'text'} onClick={() => {
+                    changeFilterShoplist(shoplistID, 'active')
                 }}>Active
-                </button>
-                <button className={filter === 'completed' ? 'btnActive' : ''} onClick={() => {
-                    changeFilterShoplist(shoplistID,'completed')
+                </Button>
+                <Button color='secondary' variant={filter === 'completed' ? 'outlined' : 'text'} onClick={() => {
+                    changeFilterShoplist(shoplistID, 'completed')
                 }}>Completed
-                </button>
+                </Button>
             </div>
         </div>
     );

@@ -1,4 +1,6 @@
 import React, {ChangeEvent, FC, KeyboardEvent, useState} from 'react';
+import {Button, IconButton, Input, TextField} from '@mui/material';
+import {AddBox} from '@mui/icons-material';
 
 type PropsType = {
     callBack: (newTitle: string) => void
@@ -34,12 +36,17 @@ const AddItemForm: FC<PropsType> = (
 
     return (
         <div>
-            <input className={error ? 'errorInput' : ''}
-                   value={newTitle}
-                   onChange={onChangeInputHandler}
-                   onKeyDown={onKeyDownHandler}/>
-            <button onClick={addGoodHandler}>+</button>
-            <div className={'errorMessage'}>{error ? <span>title is required!!!</span> : ''}</div>
+            <TextField variant="outlined"
+                       error={!!error}
+                       value={newTitle}
+                       onChange={onChangeInputHandler}
+                       onKeyDown={onKeyDownHandler}
+                       label="Enter text"
+                       helperText={error}
+            />
+            <IconButton onClick={addGoodHandler}>
+                <AddBox/>
+            </IconButton>
         </div>
     );
 };

@@ -2,6 +2,21 @@ import React, {useState} from 'react'
 import './App.css'
 import ShopList, {FilterType} from './components/ShopList';
 import {v1} from 'uuid';
+import {
+    AppBar,
+    Button,
+    Container,
+    createTheme,
+    Grid,
+    IconButton,
+    Paper,
+    ThemeProvider,
+    Toolbar,
+    Typography, useMediaQuery
+} from '@mui/material';
+import AddItemForm from './components/AddItemForm';
+import {Menu} from '@mui/icons-material';
+
 
 export type ShoplistType = {
     id: string, title: string, filter: FilterType
@@ -14,6 +29,20 @@ export type GoodsType = {
 }
 
 export function App() {
+    // const [darkMode, setDarkMode] = useState(false);
+
+    const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+
+    const theme = React.useMemo(
+        () =>
+            createTheme({
+                palette: {
+                    mode: prefersDarkMode ? 'dark' : 'light',
+                    // background: 'default'
+                },
+            }),
+        [prefersDarkMode],
+    );
 
     let shoplistID1 = v1()
     let shoplistID2 = v1()
@@ -45,48 +74,81 @@ export function App() {
         setGoods({...goods, [shoplistID]: goods[shoplistID].filter(g => g.id !== goodID)})
     }
 
-    function changeGoodStatus(shoplistID:string,goodID: string, newValue: boolean) {
-        setGoods({...goods,[shoplistID]:goods[shoplistID].map(g=>g.id === goodID ? {...g,inBacket:newValue} : g)})
+    function changeGoodStatus(shoplistID: string, goodID: string, newValue: boolean) {
+        setGoods({...goods, [shoplistID]: goods[shoplistID].map(g => g.id === goodID ? {...g, inBacket: newValue} : g)})
     }
 
-    function changeFilterShoplist (shoplistID: string, filter: FilterType) {
+    function changeFilterShoplist(shoplistID: string, filter: FilterType) {
         setShoplists(shoplists.map(s => s.id === shoplistID ? {...s, filter} : s))
     }
 
-    function removeShoplist (shoplistID:string) {
-        setShoplists(shoplists.filter(s=>s.id !== shoplistID));
+    function removeShoplist(shoplistID: string) {
+        setShoplists(shoplists.filter(s => s.id !== shoplistID));
         delete goods[shoplistID];
     }
 
-    function changeTitleGood (shoplistID:string,goodID:string,newTitle:string) {
-        setGoods({...goods,[shoplistID]:goods[shoplistID].map(g=>g.id === goodID ? {...g, title:newTitle} : g)})
+    function changeTitleGood(shoplistID: string, goodID: string, newTitle: string) {
+        setGoods({...goods, [shoplistID]: goods[shoplistID].map(g => g.id === goodID ? {...g, title: newTitle} : g)})
     }
 
-    function changeTitleShoplist (shoplistID:string,newTitle:string) {
-        setShoplists(shoplists.map(s=>s.id === shoplistID ? {...s,title:newTitle} : s))
+    function changeTitleShoplist(shoplistID: string, newTitle: string) {
+        setShoplists(shoplists.map(s => s.id === shoplistID ? {...s, title: newTitle} : s))
+    }
+
+    function addShoplist(newTitle: string) {
+        const newId = v1();
+        const newShoplist:ShoplistType = {id: newId, title: newTitle, filter: 'all'}
+        setShoplists([newShoplist, ...shoplists])
+        setGoods({[newId]:[],...goods})
     }
 
     return (
-        <div className="App">
-            {shoplists.map(s => {
-                return (
-                    <ShopList
-                        key={s.id}
-                        shoplistID={s.id}
-                        title={s.title}
-                        goods={goods[s.id]}
-                        addGood={addGood}
-                        removeGood={removeGood}
-                        changeGoodStatus={changeGoodStatus}
-                        changeFilterShoplist={changeFilterShoplist}
-                        removeShoplist={removeShoplist}
-                        changeTitleGood={changeTitleGood}
-                        changeTitleShoplist={changeTitleShoplist}
-                        filter={s.filter}
-                    />
-                )
-            })}
+        <ThemeProvider theme={theme}>
+            <div>
+                <AppBar position="static">
+                    <Toolbar>
+                        <IconButton
+                            size="large"
+                            edge="start"
+                            color="inherit"
+                            aria-label="menu"
+                            sx={{mr: 2}}
+                        >
+                            <Menu/>
+                        </IconButton>
+                        <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
+                            News
+                        </Typography>
+                        <Button color="inherit">Login</Button>
+                    </Toolbar>
+                </AppBar>
+                <Container fixed>
+                    <Grid container style={{padding: '20px'}}>
+                        <AddItemForm callBack={addShoplist}/>
+                    </Grid>
+                    <Grid container spacing={3}>{shoplists.map(s => {
+                        return (
+                            <Grid item>
+                                <Paper style={{padding: '10px'}}><ShopList
+                                    key={s.id}
+                                    shoplistID={s.id}
+                                    title={s.title}
+                                    goods={goods[s.id]}
+                                    addGood={addGood}
+                                    removeGood={removeGood}
+                                    changeGoodStatus={changeGoodStatus}
+                                    changeFilterShoplist={changeFilterShoplist}
+                                    removeShoplist={removeShoplist}
+                                    changeTitleGood={changeTitleGood}
+                                    changeTitleShoplist={changeTitleShoplist}
+                                    filter={s.filter}
+                                /></Paper>
+                            </Grid>
+                        )
+                    })}</Grid>
+                </Container>
 
-        </div>
+            </div>
+        </ThemeProvider>
     )
 }

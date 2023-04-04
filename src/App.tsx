@@ -29,8 +29,6 @@ export type GoodsType = {
 }
 
 export function App() {
-    // const [darkMode, setDarkMode] = useState(false);
-
     const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
     const theme = React.useMemo(
@@ -38,7 +36,6 @@ export function App() {
             createTheme({
                 palette: {
                     mode: prefersDarkMode ? 'dark' : 'light',
-                    // background: 'default'
                 },
             }),
         [prefersDarkMode],

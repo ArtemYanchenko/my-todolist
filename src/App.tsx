@@ -67,13 +67,27 @@ export function App() {
         setGoods({...goods, [shoplistID]: [newGood, ...goods[shoplistID]]})
     }
 
-
     function changeGoodStatus(shoplistID: string, goodID: string, newValue: boolean) {
         setGoods({...goods, [shoplistID]: goods[shoplistID].map(g => g.id === goodID ? {...g, inBacket: newValue} : g)})
     }
 
+    function changeTitleGood(shoplistID: string, goodID: string, newTitle: string) {
+        setGoods({...goods, [shoplistID]: goods[shoplistID].map(g => g.id === goodID ? {...g, title: newTitle} : g)})
+    }
+
     function removeGood(shoplistID: string, goodID: string) {
         setGoods({...goods, [shoplistID]: goods[shoplistID].filter(g => g.id !== goodID)})
+    }
+
+    function addShoplist(newTitle: string) {
+        const newId = v1();
+        const newShoplist:ShoplistType = {id: newId, title: newTitle, filter: 'all'}
+        setShoplists([newShoplist, ...shoplists])
+        setGoods({[newId]:[],...goods})
+    }
+
+    function changeTitleShoplist(shoplistID: string, newTitle: string) {
+        setShoplists(shoplists.map(s => s.id === shoplistID ? {...s, title: newTitle} : s))
     }
 
     function changeFilterShoplist(shoplistID: string, filter: FilterType) {
@@ -83,21 +97,6 @@ export function App() {
     function removeShoplist(shoplistID: string) {
         setShoplists(shoplists.filter(s => s.id !== shoplistID));
         delete goods[shoplistID];
-    }
-
-    function changeTitleGood(shoplistID: string, goodID: string, newTitle: string) {
-        setGoods({...goods, [shoplistID]: goods[shoplistID].map(g => g.id === goodID ? {...g, title: newTitle} : g)})
-    }
-
-    function changeTitleShoplist(shoplistID: string, newTitle: string) {
-        setShoplists(shoplists.map(s => s.id === shoplistID ? {...s, title: newTitle} : s))
-    }
-
-    function addShoplist(newTitle: string) {
-        const newId = v1();
-        const newShoplist:ShoplistType = {id: newId, title: newTitle, filter: 'all'}
-        setShoplists([newShoplist, ...shoplists])
-        setGoods({[newId]:[],...goods})
     }
 
     return (

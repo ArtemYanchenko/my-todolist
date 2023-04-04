@@ -1,8 +1,5 @@
 import {v1} from 'uuid';
-import {GoodsType, ShoplistType} from '../App';
-import {shoplistsReducer} from './shoplist-reducer';
-import {useState} from 'react';
-import {addGoodAC, changeGoodStatus, goodsReducer, removeGoodAC} from './goods-reducer';
+import {addGoodAC, changeGoodStatusAC, changeGoodTitleAC, goodsReducer, removeGoodAC} from './goods-reducer';
 
 test('test should be add new array shoplists ', () => {
     let shoplistID1 = v1()
@@ -58,7 +55,7 @@ test('test should be remove good of shoplists ', () => {
     expect(endState[shoplistID2][0].title).toBe('Book - GraphQL')
 })
 
-test('test should be chenge good status', () => {
+test('test should be change good status', () => {
     let shoplistID1 = v1()
     let shoplistID2 = v1()
     let startState = {
@@ -75,7 +72,7 @@ test('test should be chenge good status', () => {
     }
 
 
-    const action = changeGoodStatus(shoplistID1, '1',false)
+    const action = changeGoodStatusAC(shoplistID1, '1', false)
     const endState = goodsReducer(startState, action);
 
 
@@ -83,4 +80,29 @@ test('test should be chenge good status', () => {
     expect(endState[shoplistID1][0].inBacket).toBeTruthy()
     expect(endState[shoplistID1].length).toBe(3)
     expect(endState[shoplistID2].length).toBe(2)
+})
+
+test('test should be change good title', () => {
+    let shoplistID1 = v1()
+    let shoplistID2 = v1()
+    let startState = {
+        [shoplistID1]: [
+            {id: '1', title: 'Book - HTML&CSS', inBacket: true},
+            {id: '2', title: 'Book - JS', inBacket: true},
+            {id: '3', title: 'Book - ReactJS', inBacket: false},
+
+        ],
+        [shoplistID2]: [
+            {id: '1', title: 'Book - Rest API', inBacket: false},
+            {id: '2', title: 'Book - GraphQL', inBacket: false},
+        ]
+    }
+
+
+    const action = changeGoodTitleAC(shoplistID1, '1', 'newHELLOOOO')
+    const endState = goodsReducer(startState, action);
+
+
+    expect(endState[shoplistID1][0].title).toBe('newHELLOOOO')
+
 })

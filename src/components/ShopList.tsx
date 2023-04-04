@@ -1,4 +1,4 @@
-import React, {ChangeEvent, KeyboardEvent, FC, useState} from 'react';
+import React, {ChangeEvent, FC} from 'react';
 import {GoodType} from '../App';
 import AddItemForm from './AddItemForm';
 import EditableSpan from './EditableSpan';

@@ -1,77 +1,47 @@
 import {v1} from 'uuid';
-import {ShoplistType} from '../App';
+import {GoodsType, GoodType, ShoplistType} from '../App';
 import {FilterType} from '../components/ShopList';
 
-type AddShoplistActionType = {
-    type: 'ADD-SHOPLIST'
-    newTitle: string
-}
-
-type ChangeShoplistTitleType = {
-    type: 'CHANGE-SHOPLIST-TITLE'
+type AddGoodActionType = {
+    type: 'ADD-GOOD'
     shoplistID: string
     newTitle: string
 }
 
-type ChangeShoplistFilterType = {
-    type: 'CHANGE-SHOPLIST-FILTER'
-    shoplistID: string
-    newFilter: FilterType
-}
-
-type RemoveShoplistType = {
-    type: 'REMOVE-SHOPLIST',
+type RemoveGoodActionType = {
+    type:'REMOVE-GOOD'
     shoplistID:string
+    goodID:string
 }
 
-export const shoplistsReducer = (state: Array<ShoplistType>, action: any) => {
+export type ActionsType = AddGoodActionType | RemoveGoodActionType
+
+export const goodsReducer = (state: GoodsType, action: ActionsType) => {
     switch (action.type) {
-        case'ADD-SHOPLIST': {
-            const newId = v1();
-            const newShoplist: ShoplistType = {id: newId, title: action.newTitle, filter: 'all'}
-            return [newShoplist, ...state]
-        }
-        case 'CHANGE-SHOPLIST-TITLE': {
-            return state.map(s => s.id === action.shoplistID ? {...s, title: action.newTitle} : s)
-        }
-        case 'CHANGE-SHOPLIST-FILTER': {
-            return state.map(s => s.id === action.shoplistID ? {...s, filter: action.newFilter} : s)
-        }
-        case 'REMOVE-SHOPLIST': {
-            return state.filter(s => s.id !== action.shoplistID)
-        }
+        case'ADD-GOOD':
+            const newGood: GoodType = {id: v1(), title: action.newTitle, inBacket: false}
+            return {...state, [action.shoplistID]: [newGood, ...state[action.shoplistID]]};
+        case 'REMOVE-GOOD':
+            return {...state,[action.shoplistID]:state[action.shoplistID].filter(s=>s.id !== action.goodID)}
         default:
-            return state
+            return state;
     }
 }
 
 
-const addShoplistAC = (newTitle: string): AddShoplistActionType => {
+export const addGoodAC = (shoplistID: string, newTitle: string): AddGoodActionType => {
     return {
-        type: 'ADD-SHOPLIST',
+        type: 'ADD-GOOD',
+        shoplistID,
         newTitle
     } as const
 }
 
-const changeShoplistTitleAC = (shoplistID: string, newTitle: string): ChangeShoplistTitleType => {
-    return {
-        type: 'CHANGE-SHOPLIST-TITLE',
-        shoplistID,
-        newTitle
-    }
-}
 
-const changeShoplistFilterAC = (shoplistID: string, newFilter: FilterType): ChangeShoplistFilterType => {
+export const removeGoodAC = (shoplistID: string, goodID: string):RemoveGoodActionType=>{
     return {
-        type: 'CHANGE-SHOPLIST-FILTER',
+        type:'REMOVE-GOOD',
         shoplistID,
-        newFilter
-    }
-}
-
-const removeShoplistAC = (shoplistID: string): RemoveShoplistType => {
-    return {
-        type: 'REMOVE-SHOPLIST',
-        shoplistID
-    }
+        goodID
+    } as const
 }

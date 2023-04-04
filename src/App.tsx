@@ -67,12 +67,13 @@ export function App() {
         setGoods({...goods, [shoplistID]: [newGood, ...goods[shoplistID]]})
     }
 
-    function removeGood(shoplistID: string, goodID: string) {
-        setGoods({...goods, [shoplistID]: goods[shoplistID].filter(g => g.id !== goodID)})
-    }
 
     function changeGoodStatus(shoplistID: string, goodID: string, newValue: boolean) {
         setGoods({...goods, [shoplistID]: goods[shoplistID].map(g => g.id === goodID ? {...g, inBacket: newValue} : g)})
+    }
+
+    function removeGood(shoplistID: string, goodID: string) {
+        setGoods({...goods, [shoplistID]: goods[shoplistID].filter(g => g.id !== goodID)})
     }
 
     function changeFilterShoplist(shoplistID: string, filter: FilterType) {

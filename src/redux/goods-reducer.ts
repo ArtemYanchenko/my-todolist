@@ -24,9 +24,7 @@ type RemoveShoplistType = {
     shoplistID:string
 }
 
-export type ActionsType = AddShoplistActionType | ChangeShoplistTitleType | ChangeShoplistFilterType | RemoveShoplistType
-
-export const shoplistsReducer = (state: Array<ShoplistType>, action: ActionsType) => {
+export const shoplistsReducer = (state: Array<ShoplistType>, action: any) => {
     switch (action.type) {
         case'ADD-SHOPLIST': {
             const newId = v1();

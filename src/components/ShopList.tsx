@@ -4,19 +4,17 @@ import AddItemForm from './AddItemForm';
 import EditableSpan from './EditableSpan';
 import {Button, Checkbox, IconButton} from '@mui/material';
 import {CancelPresentation, DoNotDisturbOn} from '@mui/icons-material';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppRootState} from '../redux/store';
+import {addGoodAC, changeGoodStatusAC, changeGoodTitleAC, removeGoodAC} from '../redux/goods-reducer';
 
 export type FilterType = 'all' | 'active' | 'completed'
 
 type PropsType = {
     shoplistID: string
     title: string
-    goods: GoodType[]
-    addGood: (shoplistID: string, newTitle: string) => void
-    removeGood: (shoplistID: string, goodID: string) => void
-    changeGoodStatus: (shoplistID: string, goodID: string, newValue: boolean) => void
     changeFilterShoplist: (shoplistID: string, filter: FilterType) => void
     removeShoplist: (shoplistID: string) => void
-    changeTitleGood: (shoplistID: string, goodID: string, newTitle: string) => void
     changeTitleShoplist: (shoplistID: string, newTitle: string) => void
     filter: FilterType
 }
@@ -26,19 +24,15 @@ const ShopList: FC<PropsType> = (
     {
         shoplistID,
         title,
-        goods,
-        addGood,
-        removeGood,
-        changeGoodStatus,
         changeFilterShoplist,
         removeShoplist,
-        changeTitleGood,
         changeTitleShoplist,
         filter,
 
     }) => {
 
-
+    const goods = useSelector<AppRootState,GoodType[]>(state => state.goods[shoplistID])
+    const dispatch = useDispatch();
     let filteredGoods = goods;
 
     if (filter === 'active') {
@@ -55,13 +49,13 @@ const ShopList: FC<PropsType> = (
 
     const mappedGoods = filteredGoods.map(g => {
         const removeGoodHandler = () => {
-            removeGood(shoplistID, g.id)
+            dispatch(removeGoodAC(shoplistID, g.id))
         }
         const onChangeGoodStatusHandler = (e: ChangeEvent<HTMLInputElement>) => {
-            changeGoodStatus(shoplistID, g.id, e.currentTarget.checked);
+            dispatch(changeGoodStatusAC(shoplistID, g.id, e.currentTarget.checked));
         }
         const changeTitleGoodHandler = (newTitle: string) => {
-            changeTitleGood(shoplistID, g.id, newTitle);
+            dispatch(changeGoodTitleAC(shoplistID, g.id, newTitle));
         }
 
         return (
@@ -76,7 +70,7 @@ const ShopList: FC<PropsType> = (
     })
 
     const addGoodCallBack = (newTitle: string) => {
-        addGood(shoplistID, newTitle)
+        dispatch(addGoodAC(shoplistID, newTitle))
     }
 
     const changeShoplistTitleHandler = (newTitle: string) => {

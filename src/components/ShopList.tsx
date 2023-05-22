@@ -1,12 +1,13 @@
-import React, {ChangeEvent, FC} from 'react';
+import React, {FC} from 'react';
 import {GoodType} from '../App';
 import AddItemForm from './AddItemForm';
 import EditableSpan from './EditableSpan';
-import {Button, Checkbox, IconButton} from '@mui/material';
-import {CancelPresentation, DoNotDisturbOn} from '@mui/icons-material';
+import {Button, IconButton} from '@mui/material';
+import {CancelPresentation} from '@mui/icons-material';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppRootState} from '../redux/store';
-import {addGoodAC, changeGoodStatusAC, changeGoodTitleAC, removeGoodAC} from '../redux/goods-reducer';
+import {addGoodAC} from '../redux/goods-reducer';
+import {Good} from './Good';
 
 export type FilterType = 'all' | 'active' | 'completed'
 
@@ -31,8 +32,9 @@ const ShopList: FC<PropsType> = (
 
     }) => {
 
-    const goods = useSelector<AppRootState,GoodType[]>(state => state.goods[shoplistID])
+    const goods = useSelector<AppRootState, GoodType[]>(state => state.goods[shoplistID])
     const dispatch = useDispatch();
+
     let filteredGoods = goods;
 
     if (filter === 'active') {
@@ -42,30 +44,13 @@ const ShopList: FC<PropsType> = (
         filteredGoods = goods.filter(g => g.inBacket)
     }
 
-
     const removeShoplistHandler = () => {
         removeShoplist(shoplistID);
     }
 
     const mappedGoods = filteredGoods.map(g => {
-        const removeGoodHandler = () => {
-            dispatch(removeGoodAC(shoplistID, g.id))
-        }
-        const onChangeGoodStatusHandler = (e: ChangeEvent<HTMLInputElement>) => {
-            dispatch(changeGoodStatusAC(shoplistID, g.id, e.currentTarget.checked));
-        }
-        const changeTitleGoodHandler = (newTitle: string) => {
-            dispatch(changeGoodTitleAC(shoplistID, g.id, newTitle));
-        }
-
         return (
-            <div className={g.inBacket ? 'goodInBacket' : ''} key={g.id}>
-                <Checkbox checked={g.inBacket} color="primary" onChange={onChangeGoodStatusHandler}/>
-                <EditableSpan title={g.title} callBack={changeTitleGoodHandler}/>
-                <IconButton onClick={removeGoodHandler}>
-                    <DoNotDisturbOn/>
-                </IconButton>
-            </div>
+            <Good good={g} shoplistID={shoplistID}/>
         )
     })
 
@@ -90,15 +75,15 @@ const ShopList: FC<PropsType> = (
                 {mappedGoods}
             </div>
             <div>
-                <Button color='inherit' variant={filter === 'all' ? 'outlined' : 'text'} onClick={() => {
+                <Button color="inherit" variant={filter === 'all' ? 'outlined' : 'text'} onClick={() => {
                     changeFilterShoplist(shoplistID, 'all')
                 }}>All
                 </Button>
-                <Button color='primary' variant={filter === 'active' ? 'outlined' : 'text'} onClick={() => {
+                <Button color="primary" variant={filter === 'active' ? 'outlined' : 'text'} onClick={() => {
                     changeFilterShoplist(shoplistID, 'active')
                 }}>Active
                 </Button>
-                <Button color='secondary' variant={filter === 'completed' ? 'outlined' : 'text'} onClick={() => {
+                <Button color="secondary" variant={filter === 'completed' ? 'outlined' : 'text'} onClick={() => {
                     changeFilterShoplist(shoplistID, 'completed')
                 }}>Completed
                 </Button>

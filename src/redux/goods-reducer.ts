@@ -1,95 +1,108 @@
 import {v1} from 'uuid';
 import {GoodsType, GoodType} from '../App';
+import {AddShoplistACType, RemoveShoplistACType, shoplistID1, shoplistID2} from './shoplist-reducer';
+import {store} from './store';
 
-type AddGoodActionType = {
-    type: 'ADD-GOOD'
-    shoplistID: string
-    newTitle: string
+export type GoodsActionsType =
+    AddShoplistACType
+    | AddGoodACType
+    | ChangeGoodStatusACType
+    | ChangeGoodTitleACType
+    | RemoveGoodACType
+    | RemoveShoplistACType
+
+
+const initialState = {
+    [shoplistID1]: [
+        {id: v1(), title: 'Book - HTML&CSS', inBacket: true},
+        {id: v1(), title: 'Book - JS', inBacket: true},
+        {id: v1(), title: 'Book - ReactJS', inBacket: false},
+
+    ],
+    [shoplistID2]: [
+        {id: v1(), title: 'Book - Rest API', inBacket: false},
+        {id: v1(), title: 'Book - GraphQL', inBacket: false},
+    ]
 }
 
-type ChangeGoodStatusActionType = {
-    type: 'CHANGE-GOOD-STATUS'
-    shoplistID: string
-    goodID: string
-    newValue: boolean
-}
-
-type ChangeGoodTitleActionType = {
-    type: 'CHANGE-GOOD-TITLE'
-    shoplistID: string
-    goodID: string
-    newTitle: string
-}
-
-type RemoveGoodActionType = {
-    type: 'REMOVE-GOOD'
-    shoplistID: string
-    goodID: string
-}
-
-export type ActionsType = AddGoodActionType | ChangeGoodStatusActionType | ChangeGoodTitleActionType | RemoveGoodActionType
-
-export const goodsReducer = (state: GoodsType, action: ActionsType) => {
+export const goodsReducer = (state: GoodsType = initialState, action: GoodsActionsType): GoodsType => {
     switch (action.type) {
-        case'ADD-GOOD':
-            const newGood: GoodType = {id: v1(), title: action.newTitle, inBacket: false}
-            return {...state, [action.shoplistID]: [newGood, ...state[action.shoplistID]]};
+        case 'ADD-GOOD':
+            const newGood: GoodType = {id: v1(), title: action.payload.newTitle, inBacket: false}
+            return {...state, [action.payload.shoplistID]: [newGood, ...state[action.payload.shoplistID]]};
         case 'CHANGE-GOOD-STATUS':
             return {
                 ...state,
-                [action.shoplistID]: state[action.shoplistID].map(g => g.id === action.goodID ? {
+                [action.payload.shoplistID]: state[action.payload.shoplistID].map(g => g.id === action.payload.goodID ? {
                     ...g,
-                    filter: action.newValue
+                    inBacket: action.payload.newValue
                 } : g)
             }
         case 'CHANGE-GOOD-TITLE':
-            return {...state,
-                [action.shoplistID]: state[action.shoplistID].map(s => s.id === action.goodID ? {
+            return {
+                ...state,
+                [action.payload.shoplistID]: state[action.payload.shoplistID].map(s => s.id === action.payload.goodID ? {
                     ...s,
-                    title: action.newTitle
+                    title: action.payload.newTitle
                 } : s)
             }
         case 'REMOVE-GOOD':
-            return {...state, [action.shoplistID]: state[action.shoplistID].filter(s => s.id !== action.goodID)}
+            return {
+                ...state,
+                [action.payload.shoplistID]: state[action.payload.shoplistID].filter(s => s.id !== action.payload.goodID)
+            }
+        case 'ADD-SHOPLIST':
+            return {...state, [action.payload.shoplistId]: []}
+        case 'REMOVE-SHOPLIST':
+            delete state[action.payload.shoplistID]
+            return {...state};
         default:
             return state;
     }
 }
 
-
-export const addGoodAC = (shoplistID: string, newTitle: string): AddGoodActionType => {
+type AddGoodACType = ReturnType<typeof addGoodAC>
+export const addGoodAC = (shoplistID: string, newTitle: string) => {
     return {
         type: 'ADD-GOOD',
-        shoplistID,
-        newTitle
+        payload: {
+            shoplistID,
+            newTitle
+        }
     } as const
 }
 
-
-export const changeGoodStatusAC = (shoplistID: string, goodID: string, newValue: boolean):ChangeGoodStatusActionType => {
+type ChangeGoodStatusACType = ReturnType<typeof changeGoodStatusAC>
+export const changeGoodStatusAC = (shoplistID: string, goodID: string, newValue: boolean) => {
     return {
         type: 'CHANGE-GOOD-STATUS',
-        shoplistID,
-        goodID,
-        newValue
+        payload: {
+            shoplistID,
+            goodID,
+            newValue
+        }
     } as const
 }
 
-
-export const changeGoodTitleAC = (shoplistID: string, goodID: string, newTitle: string):ChangeGoodTitleActionType => {
+type ChangeGoodTitleACType = ReturnType<typeof changeGoodTitleAC>
+export const changeGoodTitleAC = (shoplistID: string, goodID: string, newTitle: string) => {
     return {
         type: 'CHANGE-GOOD-TITLE',
-        shoplistID,
-        goodID,
-        newTitle
+        payload: {
+            shoplistID,
+            goodID,
+            newTitle
+        }
     } as const
 }
 
-
-export const removeGoodAC = (shoplistID: string, goodID: string): RemoveGoodActionType => {
+type RemoveGoodACType = ReturnType<typeof removeGoodAC>
+export const removeGoodAC = (shoplistID: string, goodID: string) => {
     return {
         type: 'REMOVE-GOOD',
-        shoplistID,
-        goodID
+        payload: {
+            shoplistID,
+            goodID
+        }
     } as const
 }

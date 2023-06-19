@@ -1,4 +1,4 @@
-// import {v1} from 'uuid';
+import {v1} from 'uuid';
 // import {ShoplistType} from '../App';
 // import {shoplistsReducer} from './shoplist-reducer';
 //
@@ -38,8 +38,7 @@
 //     expect(endState.length).toBe(2)
 //
 // })
-
-import ReactDOM from 'react-dom/client';
+//
 //
 // test('test should be remove shoplist ', () => {
 //

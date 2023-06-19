@@ -2,81 +2,78 @@ import {v1} from 'uuid';
 import {ShoplistType} from '../App';
 import {FilterType} from '../components/ShopList';
 
-export type ShoplistsActionsType =
-    AddShoplistACType
-    | ChangeShoplistTitleACType
-    | ChangeShoplistFilterACType
-    | RemoveShoplistACType
+type AddShoplistActionType = {
+    type: 'ADD-SHOPLIST'
+    newTitle: string
+}
 
+type ChangeShoplistTitleType = {
+    type: 'CHANGE-SHOPLIST-TITLE'
+    shoplistID: string
+    newTitle: string
+}
 
-export let shoplistID1 = v1()
-export let shoplistID2 = v1()
+type ChangeShoplistFilterType = {
+    type: 'CHANGE-SHOPLIST-FILTER'
+    shoplistID: string
+    newFilter: FilterType
+}
 
-const initialState: Array<ShoplistType> = [
-    {id: shoplistID1, title: 'buy today', filter: 'all'},
-    {id: shoplistID2, title: 'buy tomorrow', filter: 'all'},
-]
+type RemoveShoplistType = {
+    type: 'REMOVE-SHOPLIST',
+    shoplistID:string
+}
 
-export const shoplistsReducer = (state: ShoplistType[] = initialState, action: ShoplistsActionsType): Array<ShoplistType> => {
+export type ActionsType = AddShoplistActionType | ChangeShoplistTitleType | ChangeShoplistFilterType | RemoveShoplistType
+
+export const shoplistsReducer = (state: Array<ShoplistType>, action: ActionsType) => {
     switch (action.type) {
         case'ADD-SHOPLIST': {
-            const newShoplist: ShoplistType = {id: action.payload.shoplistId, title: action.payload.newTitle, filter: 'all'}
+            const newId = v1();
+            const newShoplist: ShoplistType = {id: newId, title: action.newTitle, filter: 'all'}
             return [newShoplist, ...state]
         }
         case 'CHANGE-SHOPLIST-TITLE': {
-            return state.map(s => s.id === action.payload.shoplistID ? {...s, title: action.payload.newTitle} : s)
+            return state.map(s => s.id === action.shoplistID ? {...s, title: action.newTitle} : s)
         }
         case 'CHANGE-SHOPLIST-FILTER': {
-            return state.map(s => s.id === action.payload.shoplistID ? {...s, filter: action.payload.newFilter} : s)
+            return state.map(s => s.id === action.shoplistID ? {...s, filter: action.newFilter} : s)
         }
         case 'REMOVE-SHOPLIST': {
-            return state.filter(s => s.id !== action.payload.shoplistID)
+            return state.filter(s => s.id !== action.shoplistID)
         }
         default:
             return state
     }
 }
 
-export type AddShoplistACType = ReturnType<typeof addShoplistAC>
-export const addShoplistAC = (newTitle: string) => {
+
+const addShoplistAC = (newTitle: string): AddShoplistActionType => {
     return {
         type: 'ADD-SHOPLIST',
-        payload: {
-            newTitle,
-            shoplistId: v1()
-        }
+        newTitle
     } as const
 }
 
-type ChangeShoplistTitleACType = ReturnType<typeof changeShoplistTitleAC>
-export const changeShoplistTitleAC = (shoplistID: string, newTitle: string) => {
+const changeShoplistTitleAC = (shoplistID: string, newTitle: string): ChangeShoplistTitleType => {
     return {
         type: 'CHANGE-SHOPLIST-TITLE',
-        payload: {
-            shoplistID,
-            newTitle
-        }
-    } as const
+        shoplistID,
+        newTitle
+    }
 }
 
-
-type ChangeShoplistFilterACType = ReturnType<typeof changeShoplistFilterAC>
-export const changeShoplistFilterAC = (shoplistID: string, newFilter: FilterType) => {
+const changeShoplistFilterAC = (shoplistID: string, newFilter: FilterType): ChangeShoplistFilterType => {
     return {
         type: 'CHANGE-SHOPLIST-FILTER',
-        payload: {
-            shoplistID,
-            newFilter
-        }
-    } as const
+        shoplistID,
+        newFilter
+    }
 }
 
-export type RemoveShoplistACType = ReturnType<typeof removeShoplistAC>
-export const removeShoplistAC = (shoplistID: string) => {
+const removeShoplistAC = (shoplistID: string): RemoveShoplistType => {
     return {
         type: 'REMOVE-SHOPLIST',
-        payload: {
-            shoplistID
-        }
-    } as const
+        shoplistID
+    }
 }

@@ -13,7 +13,6 @@ type PropsType = {
 export const Good:FC<PropsType> = ({shoplistID,goodId}) => {
     const good = useAppSelector(state => state.goods[shoplistID].filter(el=>el.id === goodId)[0])
     const dispatch = useAppDispatch()
-debugger
     const removeGood = () => {
         dispatch(removeGoodAC(shoplistID, good.id))
     }

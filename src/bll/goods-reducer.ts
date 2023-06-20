@@ -1,8 +1,8 @@
 import {v1} from 'uuid';
 import {GoodsType, GoodType} from '../App';
 import {AddShoplistACType, RemoveShoplistACType, SetShoplistACType} from './shoplist-reducer';
-import {Dispatch} from 'redux';
 import {goodsAPI} from '../api';
+import {AppThunkType} from './store';
 
 export type GoodsActionsType =
     AddShoplistACType
@@ -11,11 +11,11 @@ export type GoodsActionsType =
     | ChangeGoodTitleACType
     | RemoveGoodACType
     | RemoveShoplistACType
-| SetGoodsType
-|SetShoplistACType
+    | SetGoodsType
+    | SetShoplistACType
 
 
-const initialState:GoodsType = {}
+const initialState: GoodsType = {}
 
 export const goodsReducer = (state = initialState, action: GoodsActionsType): GoodsType => {
     switch (action.type) {
@@ -44,11 +44,11 @@ export const goodsReducer = (state = initialState, action: GoodsActionsType): Go
                 [action.payload.shoplistID]: state[action.payload.shoplistID].filter(s => s.id !== action.payload.goodID)
             }
         case 'SET-GOODS': {
-            return {...state,[action.payload.shoplistsId]:action.payload.goods}
+            return {...state, [action.payload.shoplistsId]: action.payload.goods}
         }
-        case 'SET-SHOPLISTS':{
+        case 'SET-SHOPLISTS': {
             const copyState = {...state}
-            action.payload.shoplists.forEach(el=>{
+            action.payload.shoplists.forEach(el => {
                 copyState[el.id] = []
             })
             return copyState
@@ -110,10 +110,24 @@ export const removeGoodAC = (shoplistID: string, goodID: string) => {
 }
 
 export type SetGoodsType = ReturnType<typeof setGoods>
-export const setGoods = (shoplistsId:string,goods:any) => ({type:'SET-GOODS',payload:{shoplistsId,goods}} as const)
+export const setGoods = (shoplistsId: string, goods: any) => ({
+    type: 'SET-GOODS',
+    payload: {shoplistsId, goods}
+} as const)
 
-export const getGoodsTC = (shoplistId:string)=>(dispatch:Dispatch) => {
-    goodsAPI.getGoods(shoplistId).then(res=>{
-        dispatch(setGoods(shoplistId,res.data.items))
-    })
+export const getGoodsTC = (shoplistId: string): AppThunkType => (dispatch) => {
+    goodsAPI.getGoods(shoplistId)
+        .then(res => {
+            dispatch(setGoods(shoplistId, res.data.items))
+        })
+}
+
+
+export const addGoodTC = (id: string, newTitle: string): AppThunkType => (dispatch) => {
+    goodsAPI.addGood(id, newTitle)
+        .then(res => {
+            if (res.data.resultCode === 0) {
+                dispatch(addGoodAC(id, newTitle))
+            }
+        })
 }

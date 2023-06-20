@@ -3,10 +3,10 @@ import AddItemForm from './AddItemForm';
 import EditableSpan from './EditableSpan';
 import {Button, IconButton} from '@mui/material';
 import {CancelPresentation} from '@mui/icons-material';
-import {addGoodAC} from '../bll/goods-reducer';
+import {addGoodTC} from '../bll/goods-reducer';
 import {Good} from './Good';
 import {useAppDispatch, useAppSelector} from '../hooks/hooks';
-import {changeShoplistFilterAC, changeShoplistTitleAC, removeShoplistAC} from '../bll/shoplist-reducer';
+import {changeShoplistFilterAC, changeTodoTitleTC, removeTodoTC} from '../bll/shoplist-reducer';
 
 export type FilterType = 'all' | 'active' | 'completed'
 type ColorButtonType = 'inherit' | 'primary' | 'secondary'
@@ -30,7 +30,8 @@ const ShopList: FC<PropsType> = (
     const dispatch = useAppDispatch()
 
     const changeTitleShoplist = (newTitle: string) => {
-        dispatch(changeShoplistTitleAC(shoplistID, newTitle))
+        debugger
+        dispatch(changeTodoTitleTC(shoplistID, newTitle))
     }
 
     const changeFilterShoplist = (filter: FilterType) => {
@@ -38,7 +39,7 @@ const ShopList: FC<PropsType> = (
     }
 
     const removeShoplist = () => {
-        dispatch(removeShoplistAC(shoplistID))
+        dispatch(removeTodoTC(shoplistID))
     }
 
 
@@ -51,7 +52,6 @@ const ShopList: FC<PropsType> = (
         filteredGoods = goods.filter(g => g.inBacket)
     }
 
-debugger
     const mappedGoods = filteredGoods.map(g => {
         return (
             <Good key={g.id} goodId={g.id} shoplistID={shoplistID}/>
@@ -59,7 +59,7 @@ debugger
     })
 
     const addGoodCallBack = (newTitle: string) => {
-        dispatch(addGoodAC(shoplistID, newTitle))
+        dispatch(addGoodTC(shoplistID, newTitle))
     }
 
 

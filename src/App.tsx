@@ -4,7 +4,7 @@ import ShopList, {FilterType} from './components/ShopList';
 import {AppBar, Button, Container, Grid, IconButton, Paper, Toolbar, Typography} from '@mui/material';
 import AddItemForm from './components/AddItemForm';
 import {Menu} from '@mui/icons-material';
-import {addShoplistAC, getTodosTC} from './bll/shoplist-reducer';
+import {addTodosTC, getTodosTC} from './bll/shoplist-reducer';
 import {useAppDispatch, useAppSelector} from './hooks/hooks';
 
 
@@ -19,12 +19,11 @@ export type GoodsType = {
 }
 
 export function App() {
-
     const shoplists = useAppSelector(state => state.shoplists)
     const dispatch = useAppDispatch()
 
     const addShoplist = (newTitle: string) => {
-        dispatch(addShoplistAC(newTitle))
+        dispatch(addTodosTC(newTitle))
     }
     useEffect(()=>{
         dispatch(getTodosTC())

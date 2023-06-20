@@ -1,6 +1,5 @@
 import {v1} from 'uuid';
 import {FilterType} from '../components/ShopList';
-import {Dispatch} from 'redux';
 import {todolistAPI} from '../api';
 import {getGoodsTC} from './goods-reducer';
 import {AppThunkType} from './store';
@@ -14,7 +13,7 @@ export type ShoplistsActionsType =
 
 const initialState: ShoplistDomainType[] = []
 
-type ShoplistsApiType ={
+type ShoplistsApiType = {
     id: string
     addedDate: string
     order: number
@@ -22,16 +21,22 @@ type ShoplistsApiType ={
 }
 
 export type ShoplistDomainType = ShoplistsApiType & {
-    filter:FilterType
+    filter: FilterType
 }
 
 export const shoplistsReducer = (state = initialState, action: ShoplistsActionsType): ShoplistDomainType[] => {
     switch (action.type) {
-        case 'SET-SHOPLISTS':{
-            return action.payload.shoplists.map(el=>({...el,filter:'all'}))
+        case 'SET-SHOPLISTS': {
+            return action.payload.shoplists.map(el => ({...el, filter: 'all'}))
         }
         case'ADD-SHOPLIST': {
-            const newShoplist: ShoplistDomainType = {id: action.payload.shoplistId, title: action.payload.newTitle, filter: 'all', addedDate:'', order:0}
+            const newShoplist: ShoplistDomainType = {
+                id: action.payload.shoplistId,
+                title: action.payload.newTitle,
+                filter: 'all',
+                addedDate: '',
+                order: 0
+            }
             return [newShoplist, ...state]
         }
         case 'CHANGE-SHOPLIST-TITLE': {
@@ -93,18 +98,45 @@ export const removeShoplistAC = (shoplistID: string) => {
 }
 
 export type SetShoplistACType = ReturnType<typeof setShoplistAC>
-export const setShoplistAC = (shoplists:ShoplistsApiType[])=>({type:'SET-SHOPLISTS',payload:{shoplists}} as const)
+export const setShoplistAC = (shoplists: ShoplistsApiType[]) => ({type: 'SET-SHOPLISTS', payload: {shoplists}} as const)
 
 
-export const getTodosTC = ():AppThunkType => (dispatch) => {
+export const getTodosTC = (): AppThunkType => (dispatch) => {
     todolistAPI.getTodolists()
-        .then(res=>{
+        .then(res => {
             dispatch(setShoplistAC(res.data))
             return res.data
         })
-        .then((todos)=>{
-            todos.forEach((tl: { id: string; })=> {
+        .then((todos) => {
+            todos.forEach((tl: { id: string; }) => {
                 dispatch(getGoodsTC(tl.id))
             })
+        })
+}
+
+export const addTodosTC = (newTitle: string): AppThunkType => (dispatch) => {
+    todolistAPI.addTodo(newTitle)
+        .then(res => {
+            if (res.data.resultCode === 0) {
+                dispatch(addShoplistAC(newTitle))
+            }
+        })
+}
+
+export const changeTodoTitleTC = (id: string, newTitle: string): AppThunkType => (dispatch) => {
+    todolistAPI.changeTodoTitle(id, newTitle)
+        .then(res => {
+            if (res.data.resultCode === 0) {
+                dispatch(changeShoplistTitleAC(id, newTitle))
+            }
+        })
+}
+
+export const removeTodoTC = (id: string): AppThunkType => (dispatch) => {
+    todolistAPI.removeTodo(id)
+        .then(res => {
+            if (res.data.resultCode === 0) {
+                dispatch(removeShoplistAC(id))
+            }
         })
 }

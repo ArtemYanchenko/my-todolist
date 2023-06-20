@@ -8,12 +8,24 @@ export const instance = axios.create({
 
 export const todolistAPI = {
     getTodolists() {
-      return instance.get('todo-lists');
+        return instance.get('todo-lists');
+    },
+    addTodo(newTitle: string) {
+        return instance.post('todo-lists', {title: newTitle})
+    },
+    changeTodoTitle(id:string,newTitle:string) {
+        return instance.put(`todo-lists/${id}`,{title:newTitle})
+    },
+    removeTodo(id: string) {
+        return instance.delete(`todo-lists/${id}`)
     }
 }
 
 export const goodsAPI = {
-    getGoods(id:string) {
+    getGoods(id: string) {
         return instance.get(`todo-lists/${id}/tasks`)
+    },
+    addGood(id:string,newTitle:string){
+        return instance.post(`todo-lists/${id}/tasks`,{title:newTitle})
     }
 }

@@ -28,15 +28,15 @@ const ShopList: FC<PropsType> = (
     const goods = useAppSelector(state => state.goods[shoplistID])
     const dispatch = useAppDispatch()
 
-    const changeTitleShoplist = (shoplistID: string, newTitle: string) => {
+    const changeTitleShoplist = (newTitle: string) => {
         dispatch(changeShoplistTitleAC(shoplistID, newTitle))
     }
 
-    const changeFilterShoplist = (shoplistID: string, filter: FilterType) => {
+    const changeFilterShoplist = (filter: FilterType) => {
         dispatch(changeShoplistFilterAC(shoplistID, filter))
     }
 
-    const removeShoplist = (shoplistID: string) => {
+    const removeShoplist = () => {
         dispatch(removeShoplistAC(shoplistID))
     }
 
@@ -53,7 +53,7 @@ const ShopList: FC<PropsType> = (
 
     const mappedGoods = filteredGoods.map(g => {
         return (
-            <Good key={g.id} good={g} shoplistID={shoplistID}/>
+            <Good key={g.id} goodId={g.id} shoplistID={shoplistID}/>
         )
     })
 
@@ -67,8 +67,8 @@ const ShopList: FC<PropsType> = (
 
     const mappedButtons = buttons.map((b, i) => {
         return (
-            <Button color={colorsButton[i]} variant={filter === b ? 'outlined' : 'text'} onClick={() => {
-                changeFilterShoplist(shoplistID, b)
+            <Button key={i} color={colorsButton[i]} variant={filter === b ? 'outlined' : 'text'} onClick={() => {
+                changeFilterShoplist(b)
             }}>{b}
             </Button>
         )
@@ -77,8 +77,8 @@ const ShopList: FC<PropsType> = (
     return (
         <div className={'Shoplist'}>
             <h3>
-                <EditableSpan title={title} callBack={(newTitle) => changeTitleShoplist(shoplistID, newTitle)}/>
-                <IconButton onClick={() => removeShoplist(shoplistID)}>
+                <EditableSpan title={title} callBack={changeTitleShoplist}/>
+                <IconButton onClick={removeShoplist}>
                     <CancelPresentation/>
                 </IconButton>
             </h3>

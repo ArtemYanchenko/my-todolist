@@ -1,21 +1,11 @@
-import React, {useState} from 'react'
+import React from 'react'
 import './App.css'
 import ShopList, {FilterType} from './components/ShopList';
-import {v1} from 'uuid';
-import {
-    AppBar,
-    Button,
-    Container,
-    createTheme,
-    Grid,
-    IconButton,
-    Paper,
-    ThemeProvider,
-    Toolbar,
-    Typography, useMediaQuery
-} from '@mui/material';
+import {AppBar, Button, Container, Grid, IconButton, Paper, Toolbar, Typography} from '@mui/material';
 import AddItemForm from './components/AddItemForm';
 import {Menu} from '@mui/icons-material';
+import {addShoplistAC} from './bll/shoplist-reducer';
+import {useAppDispatch, useAppSelector} from './hooks/hooks';
 
 
 export type ShoplistType = {
@@ -29,74 +19,12 @@ export type GoodsType = {
 }
 
 export function App() {
-    // const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-    //
-    // const theme = React.useMemo(
-    //     () =>
-    //         createTheme({
-    //             palette: {
-    //                 mode: prefersDarkMode ? 'dark' : 'light',
-    //             },
-    //         }),
-    //     [prefersDarkMode],
-    // );
 
-    let shoplistID1 = v1()
-    let shoplistID2 = v1()
+    const shoplists = useAppSelector(state => state.shoplists)
+    const dispatch = useAppDispatch()
 
-    let [shoplists, setShoplists] = useState<ShoplistType[]>([
-        {id: shoplistID1, title: 'buy today', filter: 'all'},
-        {id: shoplistID2, title: 'buy tomorrow', filter: 'all'},
-    ])
-
-    let [goods, setGoods] = useState<GoodsType>({
-        [shoplistID1]: [
-            {id: v1(), title: 'Book - HTML&CSS', inBacket: true},
-            {id: v1(), title: 'Book - JS', inBacket: true},
-            {id: v1(), title: 'Book - ReactJS', inBacket: false},
-
-        ],
-        [shoplistID2]: [
-            {id: v1(), title: 'Book - Rest API', inBacket: false},
-            {id: v1(), title: 'Book - GraphQL', inBacket: false},
-        ]
-    })
-
-    function addGood(shoplistID: string, newTitle: string) {
-        const newGood = {id: v1(), title: newTitle, inBacket: false}
-        setGoods({...goods, [shoplistID]: [newGood, ...goods[shoplistID]]})
-    }
-
-    function removeGood(shoplistID: string, goodID: string) {
-        setGoods({...goods, [shoplistID]: goods[shoplistID].filter(g => g.id !== goodID)})
-    }
-
-    function changeGoodStatus(shoplistID: string, goodID: string, newValue: boolean) {
-        setGoods({...goods, [shoplistID]: goods[shoplistID].map(g => g.id === goodID ? {...g, inBacket: newValue} : g)})
-    }
-
-    function changeFilterShoplist(shoplistID: string, filter: FilterType) {
-        setShoplists(shoplists.map(s => s.id === shoplistID ? {...s, filter} : s))
-    }
-
-    function removeShoplist(shoplistID: string) {
-        setShoplists(shoplists.filter(s => s.id !== shoplistID));
-        delete goods[shoplistID];
-    }
-
-    function changeTitleGood(shoplistID: string, goodID: string, newTitle: string) {
-        setGoods({...goods, [shoplistID]: goods[shoplistID].map(g => g.id === goodID ? {...g, title: newTitle} : g)})
-    }
-
-    function changeTitleShoplist(shoplistID: string, newTitle: string) {
-        setShoplists(shoplists.map(s => s.id === shoplistID ? {...s, title: newTitle} : s))
-    }
-
-    function addShoplist(newTitle: string) {
-        const newId = v1();
-        const newShoplist: ShoplistType = {id: newId, title: newTitle, filter: 'all'}
-        setShoplists([newShoplist, ...shoplists])
-        setGoods({[newId]: [], ...goods})
+    const addShoplist = (newTitle: string) => {
+        dispatch(addShoplistAC(newTitle))
     }
 
     return (
@@ -124,21 +52,15 @@ export function App() {
                 </Grid>
                 <Grid container spacing={3}>{shoplists.map(s => {
                     return (
-                        <Grid item>
-                            <Paper style={{padding: '10px'}}><ShopList
-                                key={s.id}
-                                shoplistID={s.id}
-                                title={s.title}
-                                goods={goods[s.id]}
-                                addGood={addGood}
-                                removeGood={removeGood}
-                                changeGoodStatus={changeGoodStatus}
-                                changeFilterShoplist={changeFilterShoplist}
-                                removeShoplist={removeShoplist}
-                                changeTitleGood={changeTitleGood}
-                                changeTitleShoplist={changeTitleShoplist}
-                                filter={s.filter}
-                            /></Paper>
+                        <Grid item key={s.id}>
+                            <Paper style={{padding: '10px'}}>
+                                <ShopList
+                                    key={s.id}
+                                    shoplistID={s.id}
+                                    title={s.title}
+                                    filter={s.filter}
+                                />
+                            </Paper>
                         </Grid>
                     )
                 })}</Grid>

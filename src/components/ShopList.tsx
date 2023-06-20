@@ -1,23 +1,19 @@
-import React, {ChangeEvent, FC} from 'react';
-import {GoodType} from '../App';
+import React, {FC} from 'react';
 import AddItemForm from './AddItemForm';
 import EditableSpan from './EditableSpan';
-import {Button, Checkbox, IconButton} from '@mui/material';
-import {CancelPresentation, DoNotDisturbOn} from '@mui/icons-material';
+import {Button, IconButton} from '@mui/material';
+import {CancelPresentation} from '@mui/icons-material';
+import {addGoodAC} from '../bll/goods-reducer';
+import {Good} from './Good';
+import {useAppDispatch, useAppSelector} from '../hooks/hooks';
+import {changeShoplistFilterAC, changeShoplistTitleAC, removeShoplistAC} from '../bll/shoplist-reducer';
 
 export type FilterType = 'all' | 'active' | 'completed'
+type ColorButtonType = 'inherit' | 'primary' | 'secondary'
 
 type PropsType = {
     shoplistID: string
     title: string
-    goods: GoodType[]
-    addGood: (shoplistID: string, newTitle: string) => void
-    removeGood: (shoplistID: string, goodID: string) => void
-    changeGoodStatus: (shoplistID: string, goodID: string, newValue: boolean) => void
-    changeFilterShoplist: (shoplistID: string, filter: FilterType) => void
-    removeShoplist: (shoplistID: string) => void
-    changeTitleGood: (shoplistID: string, goodID: string, newTitle: string) => void
-    changeTitleShoplist: (shoplistID: string, newTitle: string) => void
     filter: FilterType
 }
 
@@ -26,17 +22,23 @@ const ShopList: FC<PropsType> = (
     {
         shoplistID,
         title,
-        goods,
-        addGood,
-        removeGood,
-        changeGoodStatus,
-        changeFilterShoplist,
-        removeShoplist,
-        changeTitleGood,
-        changeTitleShoplist,
         filter,
-
     }) => {
+
+    const goods = useAppSelector(state => state.goods[shoplistID])
+    const dispatch = useAppDispatch()
+
+    const changeTitleShoplist = (shoplistID: string, newTitle: string) => {
+        dispatch(changeShoplistTitleAC(shoplistID, newTitle))
+    }
+
+    const changeFilterShoplist = (shoplistID: string, filter: FilterType) => {
+        dispatch(changeShoplistFilterAC(shoplistID, filter))
+    }
+
+    const removeShoplist = (shoplistID: string) => {
+        dispatch(removeShoplistAC(shoplistID))
+    }
 
 
     let filteredGoods = goods;
@@ -49,45 +51,34 @@ const ShopList: FC<PropsType> = (
     }
 
 
-    const removeShoplistHandler = () => {
-        removeShoplist(shoplistID);
-    }
-
     const mappedGoods = filteredGoods.map(g => {
-        const removeGoodHandler = () => {
-            removeGood(shoplistID, g.id)
-        }
-        const onChangeGoodStatusHandler = (e: ChangeEvent<HTMLInputElement>) => {
-            changeGoodStatus(shoplistID, g.id, e.currentTarget.checked);
-        }
-        const changeTitleGoodHandler = (newTitle: string) => {
-            changeTitleGood(shoplistID, g.id, newTitle);
-        }
-
         return (
-            <div className={g.inBacket ? 'goodInBacket' : ''} key={g.id}>
-                <Checkbox checked={g.inBacket} color="primary" onChange={onChangeGoodStatusHandler}/>
-                <EditableSpan title={g.title} callBack={changeTitleGoodHandler}/>
-                <IconButton onClick={removeGoodHandler}>
-                    <DoNotDisturbOn/>
-                </IconButton>
-            </div>
+            <Good key={g.id} good={g} shoplistID={shoplistID}/>
         )
     })
 
     const addGoodCallBack = (newTitle: string) => {
-        addGood(shoplistID, newTitle)
+        dispatch(addGoodAC(shoplistID, newTitle))
     }
 
-    const changeShoplistTitleHandler = (newTitle: string) => {
-        changeTitleShoplist(shoplistID, newTitle)
-    }
+
+    const buttons: FilterType[] = ['all', 'active', 'completed']
+    const colorsButton: ColorButtonType[] = ['inherit', 'primary', 'secondary']
+
+    const mappedButtons = buttons.map((b, i) => {
+        return (
+            <Button color={colorsButton[i]} variant={filter === b ? 'outlined' : 'text'} onClick={() => {
+                changeFilterShoplist(shoplistID, b)
+            }}>{b}
+            </Button>
+        )
+    })
 
     return (
         <div className={'Shoplist'}>
             <h3>
-                <EditableSpan title={title} callBack={changeShoplistTitleHandler}/>
-                <IconButton onClick={removeShoplistHandler}>
+                <EditableSpan title={title} callBack={(newTitle) => changeTitleShoplist(shoplistID, newTitle)}/>
+                <IconButton onClick={() => removeShoplist(shoplistID)}>
                     <CancelPresentation/>
                 </IconButton>
             </h3>
@@ -96,18 +87,7 @@ const ShopList: FC<PropsType> = (
                 {mappedGoods}
             </div>
             <div>
-                <Button color='inherit' variant={filter === 'all' ? 'outlined' : 'text'} onClick={() => {
-                    changeFilterShoplist(shoplistID, 'all')
-                }}>All
-                </Button>
-                <Button color='primary' variant={filter === 'active' ? 'outlined' : 'text'} onClick={() => {
-                    changeFilterShoplist(shoplistID, 'active')
-                }}>Active
-                </Button>
-                <Button color='secondary' variant={filter === 'completed' ? 'outlined' : 'text'} onClick={() => {
-                    changeFilterShoplist(shoplistID, 'completed')
-                }}>Completed
-                </Button>
+                {mappedButtons}
             </div>
         </div>
     );

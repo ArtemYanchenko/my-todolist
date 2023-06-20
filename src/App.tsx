@@ -1,10 +1,10 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import './App.css'
 import ShopList, {FilterType} from './components/ShopList';
 import {AppBar, Button, Container, Grid, IconButton, Paper, Toolbar, Typography} from '@mui/material';
 import AddItemForm from './components/AddItemForm';
 import {Menu} from '@mui/icons-material';
-import {addShoplistAC} from './bll/shoplist-reducer';
+import {addShoplistAC, getTodosTC} from './bll/shoplist-reducer';
 import {useAppDispatch, useAppSelector} from './hooks/hooks';
 
 
@@ -26,7 +26,9 @@ export function App() {
     const addShoplist = (newTitle: string) => {
         dispatch(addShoplistAC(newTitle))
     }
-
+    useEffect(()=>{
+        dispatch(getTodosTC())
+    },[])
     return (
         <div>
             <AppBar position="static">

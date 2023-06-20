@@ -1,24 +1,31 @@
 import {v1} from 'uuid';
 import {ShoplistType} from '../App';
 import {FilterType} from '../components/ShopList';
+import {Dispatch} from 'react';
+import {todolistAPI} from '../api';
 
 export type ShoplistsActionsType =
     AddShoplistACType
     | ChangeShoplistTitleACType
     | ChangeShoplistFilterACType
     | RemoveShoplistACType
+    | ReturnType<typeof setShoplistAC>
 
+const initialState: ShoplistType[] = []
 
-export let shoplistID1 = v1()
-export let shoplistID2 = v1()
+type ShoplistsApiType ={
+    id: string
+    addedDate: string
+    order: number
+    title: string
+}
 
-const initialState: Array<ShoplistType> = [
-    {id: shoplistID1, title: 'buy today', filter: 'all'},
-    {id: shoplistID2, title: 'buy tomorrow', filter: 'all'},
-]
-
-export const shoplistsReducer = (state: ShoplistType[] = initialState, action: ShoplistsActionsType): Array<ShoplistType> => {
+export const shoplistsReducer = (state = initialState, action: ShoplistsActionsType): ShoplistType[] => {
     switch (action.type) {
+        case 'SET-SHOPLISTS':{
+            // @ts-ignore
+            return [...state,...action.payload.shoplists.map(el=>({...el,filter:'all',goods:[]}))]
+        }
         case'ADD-SHOPLIST': {
             const newShoplist: ShoplistType = {id: action.payload.shoplistId, title: action.payload.newTitle, filter: 'all'}
             return [newShoplist, ...state]
@@ -79,4 +86,15 @@ export const removeShoplistAC = (shoplistID: string) => {
             shoplistID
         }
     } as const
+}
+
+
+const setShoplistAC = (shoplists:ShoplistsApiType[])=>({type:'SET-SHOPLISTS',payload:{shoplists}} as const)
+
+
+export const getTodosTC = () => (dispatch:Dispatch<any>) => {
+    todolistAPI.getTodolists()
+        .then(res=>{
+            dispatch(setShoplistAC(res.data))
+        })
 }

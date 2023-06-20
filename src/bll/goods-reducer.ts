@@ -1,6 +1,6 @@
 import {v1} from 'uuid';
 import {GoodsType, GoodType} from '../App';
-import {AddShoplistACType, RemoveShoplistACType, shoplistID1, shoplistID2} from './shoplist-reducer';
+import {AddShoplistACType, RemoveShoplistACType} from './shoplist-reducer';
 
 export type GoodsActionsType =
     AddShoplistACType
@@ -9,22 +9,12 @@ export type GoodsActionsType =
     | ChangeGoodTitleACType
     | RemoveGoodACType
     | RemoveShoplistACType
+| SetGoodsType
 
 
-const initialState = {
-    [shoplistID1]: [
-        {id: v1(), title: 'Book - HTML&CSS', inBacket: true},
-        {id: v1(), title: 'Book - JS', inBacket: true},
-        {id: v1(), title: 'Book - ReactJS', inBacket: false},
+const initialState:GoodsType = {}
 
-    ],
-    [shoplistID2]: [
-        {id: v1(), title: 'Book - Rest API', inBacket: false},
-        {id: v1(), title: 'Book - GraphQL', inBacket: false},
-    ]
-}
-
-export const goodsReducer = (state: GoodsType = initialState, action: GoodsActionsType): GoodsType => {
+export const goodsReducer = (state = initialState, action: GoodsActionsType): GoodsType => {
     switch (action.type) {
         case 'ADD-GOOD':
             const newGood: GoodType = {id: v1(), title: action.payload.newTitle, inBacket: false}
@@ -50,6 +40,9 @@ export const goodsReducer = (state: GoodsType = initialState, action: GoodsActio
                 ...state,
                 [action.payload.shoplistID]: state[action.payload.shoplistID].filter(s => s.id !== action.payload.goodID)
             }
+        case 'SET-GOODS': {
+            return {...state,[action.payload.shoplistsId]:[...state[action.payload.shoplistsId],...action.payload.goods]}
+        }
         case 'ADD-SHOPLIST':
             return {...state, [action.payload.shoplistId]: []}
         case 'REMOVE-SHOPLIST':
@@ -105,3 +98,6 @@ export const removeGoodAC = (shoplistID: string, goodID: string) => {
         }
     } as const
 }
+
+export type SetGoodsType = ReturnType<typeof setGoods>
+export const setGoods = (shoplistsId:string,goods:any) => ({type:'SET-GOODS',payload:{shoplistsId,goods}} as const)

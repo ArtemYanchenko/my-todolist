@@ -25,6 +25,7 @@ const ShopList: FC<PropsType> = (
         filter,
     }) => {
 
+
     const goods = useAppSelector(state => state.goods[shoplistID])
     const dispatch = useAppDispatch()
 
@@ -50,7 +51,7 @@ const ShopList: FC<PropsType> = (
         filteredGoods = goods.filter(g => g.inBacket)
     }
 
-
+debugger
     const mappedGoods = filteredGoods.map(g => {
         return (
             <Good key={g.id} goodId={g.id} shoplistID={shoplistID}/>

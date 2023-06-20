@@ -1,7 +1,7 @@
 import {v1} from 'uuid';
 import {addGoodAC, changeGoodStatusAC, changeGoodTitleAC, goodsReducer, removeGoodAC} from './goods-reducer';
 
-test('test should be add new array shoplists ', () => {
+test('goods should be add new array shoplists', () => {
     let shoplistID1 = v1()
     let shoplistID2 = v1()
     let startState = {
@@ -29,7 +29,7 @@ test('test should be add new array shoplists ', () => {
 
 })
 
-test('test should be remove good of shoplists ', () => {
+test('goods should be remove good of shoplists', () => {
     let shoplistID1 = v1()
     let shoplistID2 = v1()
     let startState = {
@@ -55,7 +55,7 @@ test('test should be remove good of shoplists ', () => {
     expect(endState[shoplistID2][0].title).toBe('Book - GraphQL')
 })
 
-test('test should be change good status', () => {
+test('goods should be change good status', () => {
     let shoplistID1 = v1()
     let shoplistID2 = v1()
     let startState = {
@@ -77,12 +77,12 @@ test('test should be change good status', () => {
 
 
     expect(endState[shoplistID1][0].id).toBe('1')
-    expect(endState[shoplistID1][0].inBacket).toBeTruthy()
+    expect(endState[shoplistID1][0].inBacket).toBeFalsy()
     expect(endState[shoplistID1].length).toBe(3)
     expect(endState[shoplistID2].length).toBe(2)
 })
 
-test('test should be change good title', () => {
+test('goods should be change good title', () => {
     let shoplistID1 = v1()
     let shoplistID2 = v1()
     let startState = {

@@ -1,17 +1,18 @@
 import {v1} from 'uuid';
-import {ShoplistType} from '../App';
 import {FilterType} from '../components/ShopList';
-import {Dispatch} from 'react';
+import {Dispatch} from 'redux';
 import {todolistAPI} from '../api';
+import {getGoodsTC} from './goods-reducer';
+import {AppThunkType} from './store';
 
 export type ShoplistsActionsType =
     AddShoplistACType
     | ChangeShoplistTitleACType
     | ChangeShoplistFilterACType
     | RemoveShoplistACType
-    | ReturnType<typeof setShoplistAC>
+    | SetShoplistACType
 
-const initialState: ShoplistType[] = []
+const initialState: ShoplistDomainType[] = []
 
 type ShoplistsApiType ={
     id: string
@@ -20,14 +21,17 @@ type ShoplistsApiType ={
     title: string
 }
 
-export const shoplistsReducer = (state = initialState, action: ShoplistsActionsType): ShoplistType[] => {
+export type ShoplistDomainType = ShoplistsApiType & {
+    filter:FilterType
+}
+
+export const shoplistsReducer = (state = initialState, action: ShoplistsActionsType): ShoplistDomainType[] => {
     switch (action.type) {
         case 'SET-SHOPLISTS':{
-            // @ts-ignore
-            return [...state,...action.payload.shoplists.map(el=>({...el,filter:'all',goods:[]}))]
+            return action.payload.shoplists.map(el=>({...el,filter:'all'}))
         }
         case'ADD-SHOPLIST': {
-            const newShoplist: ShoplistType = {id: action.payload.shoplistId, title: action.payload.newTitle, filter: 'all'}
+            const newShoplist: ShoplistDomainType = {id: action.payload.shoplistId, title: action.payload.newTitle, filter: 'all', addedDate:'', order:0}
             return [newShoplist, ...state]
         }
         case 'CHANGE-SHOPLIST-TITLE': {
@@ -88,13 +92,19 @@ export const removeShoplistAC = (shoplistID: string) => {
     } as const
 }
 
+export type SetShoplistACType = ReturnType<typeof setShoplistAC>
+export const setShoplistAC = (shoplists:ShoplistsApiType[])=>({type:'SET-SHOPLISTS',payload:{shoplists}} as const)
 
-const setShoplistAC = (shoplists:ShoplistsApiType[])=>({type:'SET-SHOPLISTS',payload:{shoplists}} as const)
 
-
-export const getTodosTC = () => (dispatch:Dispatch<any>) => {
+export const getTodosTC = ():AppThunkType => (dispatch) => {
     todolistAPI.getTodolists()
         .then(res=>{
             dispatch(setShoplistAC(res.data))
+            return res.data
+        })
+        .then((todos)=>{
+            todos.forEach((tl: { id: string; })=> {
+                dispatch(getGoodsTC(tl.id))
+            })
         })
 }

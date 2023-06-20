@@ -1,6 +1,8 @@
 import {v1} from 'uuid';
 import {GoodsType, GoodType} from '../App';
-import {AddShoplistACType, RemoveShoplistACType} from './shoplist-reducer';
+import {AddShoplistACType, RemoveShoplistACType, SetShoplistACType} from './shoplist-reducer';
+import {Dispatch} from 'redux';
+import {goodsAPI} from '../api';
 
 export type GoodsActionsType =
     AddShoplistACType
@@ -10,6 +12,7 @@ export type GoodsActionsType =
     | RemoveGoodACType
     | RemoveShoplistACType
 | SetGoodsType
+|SetShoplistACType
 
 
 const initialState:GoodsType = {}
@@ -41,7 +44,14 @@ export const goodsReducer = (state = initialState, action: GoodsActionsType): Go
                 [action.payload.shoplistID]: state[action.payload.shoplistID].filter(s => s.id !== action.payload.goodID)
             }
         case 'SET-GOODS': {
-            return {...state,[action.payload.shoplistsId]:[...state[action.payload.shoplistsId],...action.payload.goods]}
+            return {...state,[action.payload.shoplistsId]:action.payload.goods}
+        }
+        case 'SET-SHOPLISTS':{
+            const copyState = {...state}
+            action.payload.shoplists.forEach(el=>{
+                copyState[el.id] = []
+            })
+            return copyState
         }
         case 'ADD-SHOPLIST':
             return {...state, [action.payload.shoplistId]: []}
@@ -101,3 +111,9 @@ export const removeGoodAC = (shoplistID: string, goodID: string) => {
 
 export type SetGoodsType = ReturnType<typeof setGoods>
 export const setGoods = (shoplistsId:string,goods:any) => ({type:'SET-GOODS',payload:{shoplistsId,goods}} as const)
+
+export const getGoodsTC = (shoplistId:string)=>(dispatch:Dispatch) => {
+    goodsAPI.getGoods(shoplistId).then(res=>{
+        dispatch(setGoods(shoplistId,res.data.items))
+    })
+}

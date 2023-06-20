@@ -14,6 +14,6 @@ export const todolistAPI = {
 
 export const goodsAPI = {
     getGoods(id:string) {
-        return instance.get(`todo-lists/${id}`)
+        return instance.get(`todo-lists/${id}/tasks`)
     }
 }

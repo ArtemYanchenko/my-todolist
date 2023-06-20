@@ -1,6 +1,6 @@
-import {shoplistsReducer} from './shoplist-reducer';
+import {ShoplistsActionsType, shoplistsReducer} from './shoplist-reducer';
 import {AnyAction, applyMiddleware, combineReducers, createStore} from 'redux';
-import {goodsReducer} from './goods-reducer';
+import {GoodsActionsType, goodsReducer} from './goods-reducer';
 import thunk, { ThunkAction, ThunkDispatch } from 'redux-thunk';
 
 
@@ -11,14 +11,17 @@ const rootReducer = combineReducers({
 
 export const store = createStore(rootReducer, applyMiddleware(thunk))
 
+export type AllAction = ShoplistsActionsType | GoodsActionsType
+
 export type RootStateType = ReturnType<typeof rootReducer>
 export type RootState =ReturnType<typeof store.getState>
 export type AppDispatch = ThunkDispatch<RootStateType, unknown, AnyAction>
 export type AppThunkType<ReturnType = void> = ThunkAction<
     ReturnType,
-    RootState,
+    RootStateType,
     unknown,
-    AnyAction
+    AllAction
 >
-//@ts-ignore
+
+// @ts-ignore
 window.store = store

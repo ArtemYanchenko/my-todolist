@@ -4,25 +4,7 @@ import {todolistAPI} from '../api';
 import {getGoodsTC} from './goods-reducer';
 import {AppThunkType} from './store';
 
-export type ShoplistsActionsType =
-    AddShoplistACType
-    | ChangeShoplistTitleACType
-    | ChangeShoplistFilterACType
-    | RemoveShoplistACType
-    | SetShoplistACType
-
 const initialState: ShoplistDomainType[] = []
-
-type ShoplistsApiType = {
-    id: string
-    addedDate: string
-    order: number
-    title: string
-}
-
-export type ShoplistDomainType = ShoplistsApiType & {
-    filter: FilterType
-}
 
 export const shoplistsReducer = (state = initialState, action: ShoplistsActionsType): ShoplistDomainType[] => {
     switch (action.type) {
@@ -53,52 +35,41 @@ export const shoplistsReducer = (state = initialState, action: ShoplistsActionsT
     }
 }
 
-export type AddShoplistACType = ReturnType<typeof addShoplistAC>
-export const addShoplistAC = (newTitle: string) => {
-    return {
-        type: 'ADD-SHOPLIST',
-        payload: {
-            newTitle,
-            shoplistId: v1()
-        }
-    } as const
-}
+//actions
+export const addShoplistAC = (newTitle: string) => ({
+    type: 'ADD-SHOPLIST',
+    payload: {
+        newTitle,
+        shoplistId: v1()
+    }
+} as const)
 
-type ChangeShoplistTitleACType = ReturnType<typeof changeShoplistTitleAC>
-export const changeShoplistTitleAC = (shoplistID: string, newTitle: string) => {
-    return {
-        type: 'CHANGE-SHOPLIST-TITLE',
-        payload: {
-            shoplistID,
-            newTitle
-        }
-    } as const
-}
+export const changeShoplistTitleAC = (shoplistID: string, newTitle: string) => ({
+    type: 'CHANGE-SHOPLIST-TITLE',
+    payload: {
+        shoplistID,
+        newTitle
+    }
+} as const)
 
+export const changeShoplistFilterAC = (shoplistID: string, newFilter: FilterType) => ({
+    type: 'CHANGE-SHOPLIST-FILTER',
+    payload: {
+        shoplistID,
+        newFilter
+    }
+} as const)
 
-type ChangeShoplistFilterACType = ReturnType<typeof changeShoplistFilterAC>
-export const changeShoplistFilterAC = (shoplistID: string, newFilter: FilterType) => {
-    return {
-        type: 'CHANGE-SHOPLIST-FILTER',
-        payload: {
-            shoplistID,
-            newFilter
-        }
-    } as const
-}
+export const removeShoplistAC = (shoplistID: string) => ({
+    type: 'REMOVE-SHOPLIST',
+    payload: {
+        shoplistID
+    }
+} as const)
 
-export type RemoveShoplistACType = ReturnType<typeof removeShoplistAC>
-export const removeShoplistAC = (shoplistID: string) => {
-    return {
-        type: 'REMOVE-SHOPLIST',
-        payload: {
-            shoplistID
-        }
-    } as const
-}
-
-export type SetShoplistACType = ReturnType<typeof setShoplistAC>
-export const setShoplistAC = (shoplists: ShoplistsApiType[]) => ({type: 'SET-SHOPLISTS', payload: {shoplists}} as const)
+export const setShoplistAC = (shoplists: ShoplistsApiType[]) => ({
+    type: 'SET-SHOPLISTS', payload: {shoplists}
+} as const)
 
 //thunks
 export const getTodosTC = (): AppThunkType => (dispatch) => {
@@ -139,4 +110,27 @@ export const removeTodoTC = (id: string): AppThunkType => (dispatch) => {
                 dispatch(removeShoplistAC(id))
             }
         })
+}
+
+//types
+export type ShoplistsActionsType =
+    | AddShoplistACType
+    | ReturnType<typeof changeShoplistTitleAC>
+    | ReturnType<typeof changeShoplistFilterAC>
+    | RemoveShoplistACType
+    | SetShoplistACType
+
+export type AddShoplistACType = ReturnType<typeof addShoplistAC>
+export type RemoveShoplistACType = ReturnType<typeof removeShoplistAC>
+export type SetShoplistACType = ReturnType<typeof setShoplistAC>
+
+type ShoplistsApiType = {
+    id: string
+    addedDate: string
+    order: number
+    title: string
+}
+
+export type ShoplistDomainType = ShoplistsApiType & {
+    filter: FilterType
 }

@@ -3,16 +3,126 @@ import {AddShoplistACType, RemoveShoplistACType, SetShoplistACType} from './shop
 import {goodsAPI} from '../api';
 import {AppThunkType, RootState} from './store';
 
+const initialState: GoodsType = {}
+
+export const goodsReducer = (state = initialState, action: GoodsActionsType): GoodsType => {
+    switch (action.type) {
+        case 'ADD-GOOD': {
+            return {
+                ...state,
+                [action.payload.shoplistID]: [action.payload.newGood, ...state[action.payload.shoplistID]]
+            };
+        }
+        case 'UPDATE-GOOD': {
+            return {
+                ...state,
+                [action.payload.shoplistId]: state[action.payload.shoplistId].map(g => g.id === action.payload.goodId ? {...g, ...action.payload.model} : g)
+            }
+        }
+        case 'REMOVE-GOOD': {
+            return {
+                ...state,
+                [action.payload.shoplistID]: state[action.payload.shoplistID].filter(s => s.id !== action.payload.goodID)
+            }
+        }
+        case 'SET-GOODS': {
+            return {...state, [action.payload.shoplistsId]: action.payload.goods}
+        }
+        case 'SET-SHOPLISTS': {
+            const copyState = {...state}
+            action.payload.shoplists.forEach(el => copyState[el.id] = [])
+            return copyState
+        }
+        case 'ADD-SHOPLIST': {
+            return {...state, [action.payload.shoplistId]: []};
+        }
+        case 'REMOVE-SHOPLIST': {
+            delete state[action.payload.shoplistID]
+            return {...state};
+        }
+        default:
+            return state;
+    }
+}
+
+//actions
+export const addGoodAC = (shoplistID: string, newGood: TaskTypeAPI) => ({
+    type: 'ADD-GOOD',
+    payload: {
+        shoplistID,
+        newGood
+    }
+} as const)
+
+export const removeGoodAC = (shoplistID: string, goodID: string) => ({
+    type: 'REMOVE-GOOD',
+    payload: {
+        shoplistID,
+        goodID
+    }
+} as const)
+
+export const setGoods = (shoplistsId: string, goods: TaskTypeAPI[]) => ({
+    type: 'SET-GOODS',
+    payload: {shoplistsId, goods}
+} as const)
+
+export const updateGood = (shoplistId: string, goodId: string, model: UpdateTaskModelFlex) => ({
+    type: 'UPDATE-GOOD',
+    payload: {shoplistId, goodId, model}
+} as const)
+
+
+//thunks
+export const getGoodsTC = (shoplistId: string): AppThunkType => (dispatch) => {
+    goodsAPI.getGoods(shoplistId)
+        .then(res => {
+            dispatch(setGoods(shoplistId, res.data.items))
+        })
+}
+
+export const addGoodTC = (id: string, newTitle: string): AppThunkType => (dispatch) => {
+    goodsAPI.addGood(id, newTitle)
+        .then(res => {
+            if (res.data.resultCode === 0) {
+                dispatch(addGoodAC(id, res.data.data.item))
+            }
+        })
+}
+
+export const removeGoodTC = (shoplistId: string, goodId: string): AppThunkType => (dispatch) => {
+    goodsAPI.removeGood(shoplistId, goodId)
+        .then((res) => {
+            if (res.data.resultCode === 0) {
+                dispatch(removeGoodAC(shoplistId, goodId))
+            }
+        })
+}
+
+export const updateGoodTC = (shoplistId: string, goodId: string, data: UpdateTaskModelFlex): AppThunkType => (dispatch, getState: () => RootState) => {
+    const task = getState().goods[shoplistId].find(el => el.id === goodId);
+    if (task) {
+        const model: UpdateTaskType = {...task, ...data}
+        goodsAPI.updateGood(shoplistId, goodId, model)
+            .then(res => {
+                if (res.data.resultCode === 0) {
+                    dispatch(updateGood(shoplistId, goodId, data))
+                }
+            })
+    }
+}
+
+//types
 export type GoodsActionsType =
-    AddShoplistACType
-    | AddGoodACType
-    | ChangeGoodStatusACType
-    | ChangeGoodTitleACType
-    | RemoveGoodACType
+    | AddShoplistACType
+    | ReturnType<typeof addGoodAC>
+    | ReturnType<typeof removeGoodAC>
     | RemoveShoplistACType
-    | SetGoodsType
+    | ReturnType<typeof setGoods>
     | SetShoplistACType
     | UpdateGoodType
+
+export type UpdateGoodType = ReturnType<typeof updateGood>
 
 export enum TaskStatuses {
     New,
@@ -41,6 +151,7 @@ export type TaskTypeAPI = {
     order: number
     addedDate: string
 }
+
 export type UpdateTaskType = {
     title: string
     description: string | null
@@ -49,6 +160,7 @@ export type UpdateTaskType = {
     startDate: string | null
     deadline: string | null
 }
+
 export type UpdateTaskModelFlex = {
     title?: string
     description?: string
@@ -56,154 +168,4 @@ export type UpdateTaskModelFlex = {
     priority?: TaskPriorities
     startDate?: string
     deadline?: string
-}
-const initialState: GoodsType = {}
-
-export const goodsReducer = (state = initialState, action: GoodsActionsType): GoodsType => {
-    switch (action.type) {
-        case 'ADD-GOOD':
-            return {
-                ...state,
-                [action.payload.shoplistID]: [action.payload.newGood, ...state[action.payload.shoplistID]]
-            };
-        case 'UPDATE-GOOD':{
-            return {
-                ...state,[action.payload.shoplistId]:state[action.payload.shoplistId].map(g=>g.id === action.payload.goodId ? {...g,...action.payload.model} : g)
-            }
-        }
-        case 'CHANGE-GOOD-STATUS':
-            return {
-                ...state,
-                [action.payload.shoplistID]: state[action.payload.shoplistID].map(g => g.id === action.payload.goodID ? {
-                    ...g,
-                    inBacket: action.payload.newValue
-                } : g)
-            }
-        case 'CHANGE-GOOD-TITLE':
-            return {
-                ...state,
-                [action.payload.shoplistID]: state[action.payload.shoplistID].map(s => s.id === action.payload.goodID ? {
-                    ...s,
-                    title: action.payload.newTitle
-                } : s)
-            }
-        case 'REMOVE-GOOD':
-            return {
-                ...state,
-                [action.payload.shoplistID]: state[action.payload.shoplistID].filter(s => s.id !== action.payload.goodID)
-            }
-        case 'SET-GOODS': {
-            return {...state, [action.payload.shoplistsId]: action.payload.goods}
-        }
-        case 'SET-SHOPLISTS': {
-            const copyState = {...state}
-            action.payload.shoplists.forEach(el => {
-                copyState[el.id] = []
-            })
-            return copyState
-        }
-        case 'ADD-SHOPLIST':
-            return {...state, [action.payload.shoplistId]: []}
-        case 'REMOVE-SHOPLIST':
-            delete state[action.payload.shoplistID]
-            return {...state};
-        default:
-            return state;
-    }
-}
-
-type AddGoodACType = ReturnType<typeof addGoodAC>
-export const addGoodAC = (shoplistID: string, newGood: TaskTypeAPI) => {
-    return {
-        type: 'ADD-GOOD',
-        payload: {
-            shoplistID,
-            newGood
-        }
-    } as const
-}
-
-type ChangeGoodStatusACType = ReturnType<typeof changeGoodStatusAC>
-export const changeGoodStatusAC = (shoplistID: string, goodID: string, newValue: boolean) => {
-    return {
-        type: 'CHANGE-GOOD-STATUS',
-        payload: {
-            shoplistID,
-            goodID,
-            newValue
-        }
-    } as const
-}
-
-type ChangeGoodTitleACType = ReturnType<typeof changeGoodTitleAC>
-export const changeGoodTitleAC = (shoplistID: string, goodID: string, newTitle: string) => {
-    return {
-        type: 'CHANGE-GOOD-TITLE',
-        payload: {
-            shoplistID,
-            goodID,
-            newTitle
-        }
-    } as const
-}
-
-type RemoveGoodACType = ReturnType<typeof removeGoodAC>
-export const removeGoodAC = (shoplistID: string, goodID: string) => {
-    return {
-        type: 'REMOVE-GOOD',
-        payload: {
-            shoplistID,
-            goodID
-        }
-    } as const
-}
-
-export type SetGoodsType = ReturnType<typeof setGoods>
-export const setGoods = (shoplistsId: string, goods: TaskTypeAPI[]) => ({
-    type: 'SET-GOODS',
-    payload: {shoplistsId, goods}
-} as const)
-
-
-export type UpdateGoodType = ReturnType<typeof updateGood>
-export const updateGood = (shoplistId: string, goodId: string, model: UpdateTaskModelFlex) => ({
-    type: 'UPDATE-GOOD',
-    payload: {shoplistId, goodId, model}
-} as const)
-
-
-export const getGoodsTC = (shoplistId: string): AppThunkType => (dispatch) => {
-    goodsAPI.getGoods(shoplistId)
-        .then(res => {
-            debugger
-            dispatch(setGoods(shoplistId, res.data.items))
-        })
-}
-
-
-export const addGoodTC = (id: string, newTitle: string): AppThunkType => (dispatch) => {
-    goodsAPI.addGood(id, newTitle)
-        .then(res => {
-            dispatch(addGoodAC(id, res.data.data.item))
-        })
-}
-
-export const removeGoodTC = (shoplistId: string, goodId: string): AppThunkType => (dispatch) => {
-    goodsAPI.removeGood(shoplistId, goodId)
-        .then((res) => {
-            if (res.data.resultCode === 0) {
-                dispatch(removeGoodAC(shoplistId, goodId))
-            }
-        })
-}
-
-export const updateGoodTC = (shoplistId: string, goodId: string, data: UpdateTaskModelFlex): AppThunkType => (dispatch, getState: () => RootState) => {
-    const task = getState().goods[shoplistId].find(el => el.id === goodId);
-    if (task) {
-        const model: UpdateTaskType = {...task, ...data}
-        goodsAPI.updateGood(shoplistId, goodId, model)
-            .then(res => {
-
-            })
-    }
 }

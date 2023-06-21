@@ -30,7 +30,6 @@ const ShopList: FC<PropsType> = (
     const dispatch = useAppDispatch()
 
     const changeTitleShoplist = (newTitle: string) => {
-        debugger
         dispatch(changeTodoTitleTC(shoplistID, newTitle))
     }
 

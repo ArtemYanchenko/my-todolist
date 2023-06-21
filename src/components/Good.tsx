@@ -2,7 +2,7 @@ import React, {ChangeEvent, FC} from 'react';
 import {Checkbox, IconButton} from '@mui/material';
 import EditableSpan from './EditableSpan';
 import {DoNotDisturbOn} from '@mui/icons-material';
-import {changeGoodTitleAC, removeGoodTC, TaskStatuses, updateGoodTC} from '../bll/goods-reducer';
+import {removeGoodTC, TaskStatuses, updateGoodTC} from '../bll/goods-reducer';
 import {useAppDispatch, useAppSelector} from '../hooks/hooks';
 
 type PropsType = {
@@ -23,7 +23,7 @@ export const Good:FC<PropsType> = ({shoplistID,goodId}) => {
         dispatch(updateGoodTC(shoplistID, good.id, {status}));
     }
     const changeTitleGood = (newTitle: string) => {
-        dispatch(changeGoodTitleAC(shoplistID, good.id, newTitle));
+        dispatch(updateGoodTC(shoplistID, good.id, {title:newTitle}));
     }
     return (
         <div className={good.status === TaskStatuses.Completed ? 'goodInBacket' : ''} key={good.id}>

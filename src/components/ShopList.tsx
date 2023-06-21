@@ -3,7 +3,7 @@ import AddItemForm from './AddItemForm';
 import EditableSpan from './EditableSpan';
 import {Button, IconButton} from '@mui/material';
 import {CancelPresentation} from '@mui/icons-material';
-import {addGoodTC} from '../bll/goods-reducer';
+import {addGoodTC, TaskStatuses} from '../bll/goods-reducer';
 import {Good} from './Good';
 import {useAppDispatch, useAppSelector} from '../hooks/hooks';
 import {changeShoplistFilterAC, changeTodoTitleTC, removeTodoTC} from '../bll/shoplist-reducer';
@@ -46,10 +46,10 @@ const ShopList: FC<PropsType> = (
     let filteredGoods = goods;
 
     if (filter === 'active') {
-        filteredGoods = goods.filter(g => !g.inBacket)
+        filteredGoods = goods.filter(g => g.status === TaskStatuses.New)
     }
     if (filter === 'completed') {
-        filteredGoods = goods.filter(g => g.inBacket)
+        filteredGoods = goods.filter(g => g.status === TaskStatuses.Completed)
     }
 
     const mappedGoods = filteredGoods.map(g => {
@@ -86,6 +86,7 @@ const ShopList: FC<PropsType> = (
             <AddItemForm callBack={addGoodCallBack}/>
             <div>
                 {mappedGoods}
+                {goods.length === 0 && <b>Your tasks list is empty</b>}
             </div>
             <div>
                 {mappedButtons}

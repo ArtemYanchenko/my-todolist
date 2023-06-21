@@ -1,5 +1,5 @@
 import React, {ChangeEvent, FC, KeyboardEvent, useState} from 'react';
-import {Button, IconButton, Input, TextField} from '@mui/material';
+import {IconButton, TextField} from '@mui/material';
 import {AddBox} from '@mui/icons-material';
 
 type PropsType = {
@@ -37,7 +37,7 @@ const AddItemForm: FC<PropsType> = (
     return (
         <div>
             <TextField variant="outlined"
-                       error={!!error}
+                       error={error}
                        value={newTitle}
                        onChange={onChangeInputHandler}
                        onKeyDown={onKeyDownHandler}

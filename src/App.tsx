@@ -6,6 +6,7 @@ import AddItemForm from './components/AddItemForm';
 import {Menu} from '@mui/icons-material';
 import {addTodosTC, getTodosTC} from './bll/shoplist-reducer';
 import {useAppDispatch, useAppSelector} from './hooks/hooks';
+import {TaskTypeAPI} from './bll/goods-reducer';
 
 
 export type ShoplistType = {
@@ -15,7 +16,7 @@ export type ShoplistType = {
 export type GoodType = { id: string, title: string, inBacket: boolean }
 
 export type GoodsType = {
-    [key: string]: GoodType[];
+    [key: string]: TaskTypeAPI[];
 }
 
 export function App() {

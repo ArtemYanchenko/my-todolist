@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {UpdateTaskModelFlex, UpdateTaskType} from './bll/goods-reducer';
 
 export const instance = axios.create({
     baseURL: 'https://social-network.samuraijs.com/api/1.1/',
@@ -27,5 +28,11 @@ export const goodsAPI = {
     },
     addGood(id:string,newTitle:string){
         return instance.post(`todo-lists/${id}/tasks`,{title:newTitle})
+    },
+    removeGood(shoplistId:string,goodId:string){
+        return instance.delete(`todo-lists/${shoplistId}/tasks/${goodId}`)
+    },
+    updateGood(shoplistId:string,goodId:string,taskModel:UpdateTaskType) {
+        return instance.put(`todo-lists/${shoplistId}/tasks/${goodId}`,taskModel)
     }
 }

@@ -100,7 +100,7 @@ export const removeShoplistAC = (shoplistID: string) => {
 export type SetShoplistACType = ReturnType<typeof setShoplistAC>
 export const setShoplistAC = (shoplists: ShoplistsApiType[]) => ({type: 'SET-SHOPLISTS', payload: {shoplists}} as const)
 
-
+//thunks
 export const getTodosTC = (): AppThunkType => (dispatch) => {
     todolistAPI.getTodolists()
         .then(res => {

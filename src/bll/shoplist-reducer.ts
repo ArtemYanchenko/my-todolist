@@ -78,8 +78,8 @@ export const getTodosTC = (): AppThunkType => (dispatch) => {
             dispatch(setShoplistAC(res.data))
             return res.data
         })
-        .then((todos) => {
-            todos.forEach((tl: { id: string; }) => {
+        .then((todos: ShoplistDomainType[]) => {
+            todos.forEach((tl) => {
                 dispatch(getGoodsTC(tl.id))
             })
         })

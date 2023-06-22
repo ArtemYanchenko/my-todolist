@@ -3,10 +3,11 @@ import AddItemForm from './AddItemForm';
 import EditableSpan from './EditableSpan';
 import {Button, IconButton} from '@mui/material';
 import {CancelPresentation} from '@mui/icons-material';
-import {addGoodTC, TaskStatuses} from '../bll/goods-reducer';
+import {addGoodTC, TaskStatuses, TaskTypeAPI} from '../bll/goods-reducer';
 import {Good} from './Good';
 import {useAppDispatch, useAppSelector} from '../hooks/hooks';
 import {changeShoplistFilterAC, changeTodoTitleTC, removeTodoTC} from '../bll/shoplist-reducer';
+import {GoodsType} from '../App';
 
 export type FilterType = 'all' | 'active' | 'completed'
 type ColorButtonType = 'inherit' | 'primary' | 'secondary'
@@ -41,17 +42,30 @@ const ShopList: FC<PropsType> = (
         dispatch(removeTodoTC(shoplistID))
     }
 
+    //
+    // let filteredGoods = goods;
+    //
+    // if (filter === 'active') {
+    //     filteredGoods = goods.filter(g => g.status === TaskStatuses.New)
+    // }
+    // if (filter === 'completed') {
+    //     filteredGoods = goods.filter(g => g.status === TaskStatuses.Completed)
+    // }
 
-    let filteredGoods = goods;
+    const filteredGoods = (): TaskTypeAPI[]=> {
+        if (filter === 'active') {
+            return goods.filter(t => t.status === TaskStatuses.New);
+        }
+        if (filter === 'completed') {
+            return goods.filter(t => t.status === TaskStatuses.Completed);
+        }
+        return goods
+    };
 
-    if (filter === 'active') {
-        filteredGoods = goods.filter(g => g.status === TaskStatuses.New)
-    }
-    if (filter === 'completed') {
-        filteredGoods = goods.filter(g => g.status === TaskStatuses.Completed)
-    }
 
-    const mappedGoods = filteredGoods.map(g => {
+    let allTodolistTasks = filteredGoods();
+
+    const mappedGoods = allTodolistTasks.map(g => {
         return (
             <Good key={g.id} goodId={g.id} shoplistID={shoplistID}/>
         )
@@ -85,7 +99,7 @@ const ShopList: FC<PropsType> = (
             <AddItemForm callBack={addGoodCallBack}/>
             <div>
                 {mappedGoods}
-                {goods.length === 0 && <b>Your tasks list is empty</b>}
+                {filteredGoods().length === 0 && <b>Your tasks list is empty</b>}
             </div>
             <div>
                 {mappedButtons}

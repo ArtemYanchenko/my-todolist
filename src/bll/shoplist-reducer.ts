@@ -36,13 +36,16 @@ export const shoplistsReducer = (state = initialState, action: ShoplistsActionsT
 }
 
 //actions
-export const addShoplistAC = (newTitle: string) => ({
-    type: 'ADD-SHOPLIST',
-    payload: {
-        newTitle,
-        shoplistId: v1()
-    }
-} as const)
+export const addShoplistAC = (newTitle: string) => {
+    return {
+        type: 'ADD-SHOPLIST',
+        payload: {
+            newTitle,
+            shoplistId: v1()
+        }
+    } as const
+}
+
 
 export const changeShoplistTitleAC = (shoplistID: string, newTitle: string) => ({
     type: 'CHANGE-SHOPLIST-TITLE',

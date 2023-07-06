@@ -1,4 +1,4 @@
-import React, {FC, useCallback} from 'react';
+import React, {FC} from 'react';
 import AddItemForm from './AddItemForm';
 import EditableSpan from './EditableSpan';
 import {Button, IconButton} from '@mui/material';
@@ -41,7 +41,7 @@ const ShopList: FC<PropsType> = (
         dispatch(removeTodoTC(shoplistID))
     }
 
-    const filteredGoods = useCallback ((): TaskTypeAPI[]=> {
+    const filteredGoods = (): TaskTypeAPI[]=> {
         if (filter === 'active') {
             return goods.filter(t => t.status === TaskStatuses.New);
         }
@@ -49,7 +49,7 @@ const ShopList: FC<PropsType> = (
             return goods.filter(t => t.status === TaskStatuses.Completed);
         }
         return goods
-    },[filter]);
+    };
 
     let allTodolistTasks = filteredGoods();
 

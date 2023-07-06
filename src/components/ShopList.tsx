@@ -1,4 +1,4 @@
-import React, {FC} from 'react';
+import React, {FC, useCallback} from 'react';
 import AddItemForm from './AddItemForm';
 import EditableSpan from './EditableSpan';
 import {Button, IconButton} from '@mui/material';
@@ -7,7 +7,6 @@ import {addGoodTC, TaskStatuses, TaskTypeAPI} from '../bll/goods-reducer';
 import {Good} from './Good';
 import {useAppDispatch, useAppSelector} from '../hooks/hooks';
 import {changeShoplistFilterAC, changeTodoTitleTC, removeTodoTC} from '../bll/shoplist-reducer';
-import {GoodsType} from '../App';
 
 export type FilterType = 'all' | 'active' | 'completed'
 type ColorButtonType = 'inherit' | 'primary' | 'secondary'
@@ -42,17 +41,7 @@ const ShopList: FC<PropsType> = (
         dispatch(removeTodoTC(shoplistID))
     }
 
-    //
-    // let filteredGoods = goods;
-    //
-    // if (filter === 'active') {
-    //     filteredGoods = goods.filter(g => g.status === TaskStatuses.New)
-    // }
-    // if (filter === 'completed') {
-    //     filteredGoods = goods.filter(g => g.status === TaskStatuses.Completed)
-    // }
-
-    const filteredGoods = (): TaskTypeAPI[]=> {
+    const filteredGoods = useCallback ((): TaskTypeAPI[]=> {
         if (filter === 'active') {
             return goods.filter(t => t.status === TaskStatuses.New);
         }
@@ -60,8 +49,7 @@ const ShopList: FC<PropsType> = (
             return goods.filter(t => t.status === TaskStatuses.Completed);
         }
         return goods
-    };
-
+    },[filter]);
 
     let allTodolistTasks = filteredGoods();
 

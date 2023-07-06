@@ -9,7 +9,7 @@ const rootReducer = combineReducers({
     shoplists:shoplistsReducer,
 })
 
-export const store = createStore(rootReducer)
+export const store = createStore(rootReducer,applyMiddleware(thunk))
 
 export type AllAction = ShoplistsActionsType | GoodsActionsType
 
